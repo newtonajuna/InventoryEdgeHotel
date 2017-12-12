@@ -1,0 +1,181 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Points Card</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script  language="javascript">
+            function confirmDelete()
+            {
+                return confirm('Are you sure you want to delete this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+        </script> 
+    </h:head>
+    <f:event listener="#{navigationBean.checkAccessDenied('INTER BRANCH', 'View')}" type="preRenderView" />
+    <f:event listener="#{pointsCardBean.initClearPointsCard(pointsCard)}" type="preRenderView" />
+    <h:body>
+        <ui:include src="Menu.xhtml"/>
+        <h:form id="form" styleClass="clsMainFrom" onkeypress="if (event.keyCode == 13)
+                    return false;">
+
+            <h:panelGrid styleClass="clsGridMainHeader" columns="1">
+                <h:outputLabel styleClass="clsLabelTop" id="olblPointsCardHeader" value="Points Card"/>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainInput" columns="1">
+                <h:panelGrid styleClass="clsGridMainInput" columns="4">
+                    <h:outputLabel styleClass="clsLabel" value="Card Branch:"/>
+                    <h:selectOneMenu styleClass="clsMenu" id="menuRegBranch" value="#{pointsCard.regBranchId}">
+                        <f:selectItem itemLabel="" itemValue="0"/>
+                        <f:selectItems value="#{branchBean.branches}" var="b" itemLabel="#{b.branchName}" itemValue="#{b.branchId}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel styleClass="clsLabel" value="Card Number:"/>
+                    <h:inputText styleClass="clsInput" id="itxtCardNumber" disabled="true" value="#{pointsCard.cardNumber}" autocomplete="off">
+                    </h:inputText>
+
+                    <h:outputLabel styleClass="clsLabel" value="Card Holder Name(s):"/>
+                    <h:inputText styleClass="clsInput" id="itxtCardHolder" value="#{pointsCard.cardHolder}" autocomplete="off">
+                    </h:inputText>
+                    <h:outputLabel styleClass="clsLabel" value="Phone:"/>
+                    <h:inputText styleClass="clsInput" id="itxtPhone" value="#{pointsCard.phone}" autocomplete="off">
+                    </h:inputText>
+
+                    <h:outputLabel styleClass="clsLabel" value="Email:"/>
+                    <h:inputText styleClass="clsInput" id="itxtEmail" value="#{pointsCard.email}" autocomplete="off">
+                    </h:inputText>
+                    <h:outputLabel styleClass="clsLabel" value="Website:"/>
+                    <h:inputText styleClass="clsInput" id="itxtWebsite" value="#{pointsCard.website}" autocomplete="off">
+                    </h:inputText>
+
+                    <h:outputLabel styleClass="clsLabel" value="Tax Identity:"/>
+                    <h:inputText styleClass="clsInput" id="itxtTaxIdentity" value="#{pointsCard.taxIdentity}" autocomplete="off">
+                    </h:inputText>
+                    <h:outputLabel styleClass="clsLabel" value="Points Balance:"/>
+                    <h:inputText styleClass="clsInput" id="itxtPointsBalance" value="#{pointsCard.pointsBalance}" disabled="true" autocomplete="off">
+                    </h:inputText>
+
+                    <h:outputLabel styleClass="clsLabel" value="Physical Address:"/>
+                    <h:inputTextarea styleClass="clsInput" id="itxaPhysicalAddress" rows="4" value="#{pointsCard.physicalAddress}">
+                    </h:inputTextarea>
+                    <h:outputLabel styleClass="clsLabel" value="Account Details:"/>
+                    <h:inputTextarea styleClass="clsInput" id="itxaAccountDetails" rows="4" value="#{pointsCard.accountDetails}">
+                    </h:inputTextarea>
+
+                    <h:outputLabel styleClass="clsLabel" value="Contact Person Name(s):"/>
+                    <h:inputText styleClass="clsInput" id="itxtCpName" value="#{pointsCard.cpname}" autocomplete="off">
+                    </h:inputText>
+                    <h:outputLabel styleClass="clsLabel" value="Contact Person Title:"/>
+                    <h:inputText styleClass="clsInput" id="itxtCpTitle" value="#{pointsCard.cptitle}" autocomplete="off">
+                    </h:inputText>
+
+                    <h:outputLabel styleClass="clsLabel" value="Contact Person Phone:"/>
+                    <h:inputText styleClass="clsInput" id="itxtCpPhone" value="#{pointsCard.cpphone}" autocomplete="off">
+                    </h:inputText>
+                    <h:outputLabel styleClass="clsLabel" value="Contact Person Email:"/>
+                    <h:inputText styleClass="clsInput" id="itxtCpEmail" value="#{pointsCard.cpemail}" autocomplete="off">
+                    </h:inputText>
+                </h:panelGrid>
+
+                <h:panelGrid id="pnlgPointsCard" columns="2" rendered="#{pointsCard.cardNumber!=''}" >
+                    <h:panelGrid id="pnlgPointsCardPrint" columns="2" style="border: solid black;border-width: 8px;" >
+                        <h:graphicImage alt="L.O.G.O" value="#{companySetting.getLogoUrl()}" />
+                        <h:outputLabel value="#{companySetting.getLICENSE_CLIENT_NAME()}" style="font-weight: bold;font-size: 25px;"/>
+
+                        <p:barcode value="#{pointsCard.cardNumber}" type="code128" height="100%" width="100%"/>
+                        <h:outputLabel value="#{pointsCard.cardHolder}"/>
+
+                        <h:outputLabel value=""/>
+                        <h:outputLabel value="CUSTOMER LOYALTY CARD" style="background-color: black;color: white;font-weight: bold;"/>
+                    </h:panelGrid>
+                    <p:commandLink value="Print.Customer.Loyalty.Card">
+                        <p:printer target="pnlgPointsCardPrint" rendered="false"/>
+                    </p:commandLink>
+                </h:panelGrid>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainCommands" columns="1">
+                <h:panelGrid styleClass="clsGridMainCommands1" columns="4">
+                    <h:commandButton styleClass="clsButtonBig" id="cmdbSave" value="SAVE (ALT+S)" accesskey="s">
+                        <f:ajax listener="#{pointsCardBean.savePointsCard(pointsCard)}" execute="@form" render="@form" />
+                    </h:commandButton>
+                    <h:commandButton styleClass="clsButtonBig" id="cmdbClear" value="CLEAR (ALT+C)" accesskey="c">
+                        <f:ajax listener="#{pointsCardBean.clearPointsCard(pointsCard)}" execute="@form" render="@form" />
+                    </h:commandButton>
+                    <h:commandButton styleClass="clsButtonBig" id="cmdbDelete" value="DELETE (ALT+D)" onclick="return confirmDelete();" accesskey="d">
+                        <f:ajax listener="#{pointsCardBean.deletePointsCard(pointsCard)}" execute="@form" render="@form" />
+                    </h:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainMessages" columns="1">
+                <h:outputLabel styleClass="clsActionMessage" id="olblActionMessage" value="#{pointsCardBean.actionMessage}"/>
+                <h:messages id="msgsMainMessage" style="color: red"/><br/>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainSearch" columns="1">
+                <h:outputLabel id="olblMainSearch" value="Search PointsCards"/>
+                <h:outputLabel id="olblMainSearchDesc" value="(Type card number OR card holder names)"/>
+                <h:inputText id="itxtMainSearch" value="#{pointsCardBean.searchCardNumber}" autocomplete="off">
+                    <f:ajax event="keyup" render="dtblPointsCard" listener="#{pointsCardBean.getPointsCards()}"/>
+                </h:inputText>
+            </h:panelGrid>
+
+            <h:dataTable id="dtblPointsCard" value="#{pointsCardBean.pointsCards}" var="pc" 
+                         styleClass="cls-table" 
+                         headerClass="cls-table-header" 
+                         rowClasses="cls-table-odd-row,cls-table-even-row" 
+                         columnClasses="cls-table-col1,cls-table-col2,cls-table-col3,cls-table-col4,cls-table-col5"
+                         > 
+
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Card Number</f:facet>
+                    <!-- row record -->
+                    #{pc.cardNumber}
+                </h:column>
+
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Card Holder Names</f:facet>
+                    <!-- row record -->
+                    #{pc.cardHolder}
+                </h:column>
+
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Phone</f:facet>
+                    <!-- row record -->
+                    #{pc.phone}
+                </h:column>
+
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Email</f:facet>
+                    <!-- row record -->
+                    #{pc.email}
+                </h:column>
+
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Action</f:facet>
+                    <!-- row record -->
+                    <h:commandLink value="Edit">
+                        <f:ajax listener="#{pointsCardBean.displayPointsCard(pc,pointsCard)}" execute="@form" render="@form"/>
+                    </h:commandLink>
+                    &nbsp;
+                </h:column>
+
+            </h:dataTable>
+
+        </h:form>
+    </h:body>
+</html>
+

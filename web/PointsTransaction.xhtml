@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Points Transactions</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script  language="javascript">
+            function confirmDelete()
+            {
+                return confirm('Are you sure you want to delete this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+            function confirmCancel()
+            {
+                return confirm('Are you sure you want to Cancel this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+        </script> 
+    </h:head>
+    <f:event listener="#{navigationBean.checkAccessDenied('INTER BRANCH', 'View')}" type="preRenderView" />
+    <h:body>
+        <ui:include src="Menu.xhtml"/>
+        <h:form id="formPay" styleClass="clsMainFrom" onkeypress="if (event.keyCode == 13) return false;">
+
+            <h:panelGrid styleClass="clsGridMainHeader" columns="1">
+                <h:outputLabel styleClass="clsLabelTop" id="olblPointsTransactionHeader" value="POINTS TRANSACTIONS"/>
+            </h:panelGrid>
+            
+            <h:panelGrid styleClass="clsGridMainInput" columns="3" style="background-color: chocolate">
+                <h:outputLabel styleClass="clsLabel" value="Customer Names/Points Card No:"/>
+                <p:autoComplete id="autcPointsCard" value="#{pointsCardBean.selectedPointsCard}" 
+                                completeMethod="#{pointsCardBean.getPointsCardsByObjectList}" 
+                                var="ptc" 
+                                itemLabel="#{ptc.cardHolder}" 
+                                itemValue="#{ptc}" 
+                                converter="PointsCardConverter" style="text-align: left" 
+                                forceSelection="true" 
+                                 >
+                    <p:column headerText="Card Number" style="text-align: left" >  
+                    #{ptc.cardNumber} 
+                    </p:column> 
+                    <p:column headerText="Holder Names" style="text-align: left">  
+                    #{ptc.cardHolder} 
+                    </p:column> 
+                        <p:ajax event="itemSelect" update="dtblPointsTransaction" />
+                        <p:ajax event="change" rendered="#{pointsCardBean.selectedPointsCard!=null}" update="dtblPointsTransaction" />
+                    </p:autoComplete>
+                
+                <h:outputLabel styleClass="clsLabel" value=""/>
+             </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainMessages" columns="1">
+                <h:outputLabel styleClass="clsActionMessage" id="olblActionMessage" value="#{pointsTransactionBean.actionMessage}"/>
+                <h:messages id="msgsMainMessage" style="color: red"/><br/>
+            </h:panelGrid>
+
+            <h:dataTable id="dtblPointsTransaction" value="#{pointsTransactionBean.getPointsTransactions(pointsCardBean.selectedPointsCard.pointsCardId)}" var="pt" 
+                         styleClass="cls-table" 
+                         headerClass="cls-table-header" 
+                         rowClasses="cls-table-odd-row,cls-table-even-row" 
+                         columnClasses="cls-table-col1,cls-table-col2,cls-table-col3,cls-table-col4,cls-table-col5,cls-table-col6,cls-table-col7,cls-table-col8,cls-table-col9,cls-table-col10"
+                         > 
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Points Trans.ID</f:facet>
+                    <!-- row record -->
+                    #{pt.pointsTransactionId}
+                </h:column>
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Trans.ID</f:facet>
+                    <!-- row record -->
+                    #{pt.transactionId}
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Branch</f:facet>
+                    <!-- row record -->
+                    #{branchBean.getBranch(pt.transBranchId).branchName}
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Trans.Amount</f:facet>
+                    <!-- row record -->
+                    <h:outputLabel value="#{transBean.getTrans(pt.transactionId).grandTotal}">
+                         <f:convertNumber pattern="###,###,###"/>
+                    </h:outputLabel>
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Points Awarded</f:facet>
+                    <!-- row record -->
+                    <h:outputLabel value="#{pt.pointsAwarded}">
+                         <f:convertNumber pattern="###,###,###.#"/>
+                    </h:outputLabel>
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Spent.Date</f:facet>
+                    <!-- row record -->
+                    <h:outputLabel value="#{pt.transactionDate}">
+                         <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                    </h:outputLabel>
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Points Spent</f:facet>
+                    <!-- row record -->
+                    <h:outputLabel value="#{pt.pointsSpent}">
+                         <f:convertNumber pattern="###,###,###.#"/>
+                    </h:outputLabel>
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Points.Spent Amount</f:facet>
+                    <!-- row record -->
+                    <h:outputLabel value="#{pt.pointsSpentAmount}">
+                         <f:convertNumber pattern="###,###,###"/>
+                    </h:outputLabel>
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Added.By User</f:facet>
+                    <!-- row record -->
+                    #{pt.addUser}
+                </h:column>  
+            </h:dataTable>
+
+        </h:form>
+    </h:body>
+</html>
+

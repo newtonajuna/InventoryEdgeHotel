@@ -1,0 +1,246 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <ui:composition>
+        <p:dialog id="GFDlg" widgetVar="GFDialog" resizable="true"  appendTo="@(body)" header="Guest Folio" width="80%" height="500px" fitViewport="true">
+            <h:form id="formGF" onkeypress="if (event.keyCode == 13)
+                        return false;">
+                <h:panelGrid id="id0" columns="1" styleClass="clsPanelReportFilterTitle">
+                    <h:outputLabel styleClass="clsLabelReportFilterTitle" value="Transactors Ledger Report - Detail"/>
+                </h:panelGrid>
+                <h:panelGrid>
+                    <p:commandButton id="cmdbvPrint" value="PRINT FOLIO" icon="ui-icon-print" type="button">
+                        <p:printer target="vTransactionGrid" rendered="false"/>
+                    </p:commandButton>
+                </h:panelGrid>
+                <h:panelGrid id="vTransactionGrid" style="border-style: solid;">
+                    <h:panelGrid columns="3" style="width:100%;margin: 0px;">
+                        <h:panelGrid style="width: 350px; margin: 0px;" columns="2">
+                            <p:graphicImage value="#{companySetting.getLogoUrl()}" style="width:150px;float: left;" rendered="#{generalSetting.isTwoStringsEqual(companySetting.getShowLogoInvoice(),'Yes')}" />
+                            <h:outputLabel value="#{companySetting.getPhysicalAddress()}"/>
+                        </h:panelGrid>
+                        <h:panelGrid style="width: 350px;text-align: center;" columns="1">
+                            <h:outputLabel style="font-size: 20px;font-weight: bold;" value="#{companySetting.getLICENSE_CLIENT_NAME()}"/>
+                            <h:outputLabel style="font-size: 16px;" value="#{companySetting.getBranchCode()}" rendered="#{companySetting.getShowBranchInvoice().equals('Yes')}"/>
+                            <h:outputLabel style="font-size: 16px;" value="#{storeBean.getStore(salesInvoiceBean.getCurrentTransaction().storeId).storeName}" rendered="#{companySetting.getShowStoreInvoice().equals('Yes')}"/>
+                        </h:panelGrid>
+                        <h:panelGrid style="margin: 0px;" columns="1">
+                            <h:outputLabel value=" Tel:#{companySetting.getPhone()} "/>
+                            <h:outputLabel value=" TIN:#{companySetting.getTaxIdentity()} "/>
+                            <h:outputLabel value=" Email:#{companySetting.getEmail()} "/>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                    <h:panelGrid columns="1" style="text-align: center;width:100%;margin: 0px;background-color: gray;color: white;-webkit-print-color-adjust: exact;">
+                        <h:outputLabel value="GUEST FOLIO" style="font-size:30px;font-weight: bold;"/>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2" style="width: 100% !important;">
+                        <p:dataTable tableStyle="width:auto;" id="tblTransactorLedgerSummary" var="rtss" value="#{transactorLedgerBean.getReportTransactorLedgerSummarySingleIndividual_Guest_Folio(transactorLedger.billTransactorId,guestFolioBean.guestFolio.guestFolioId)}" 
+                                     >
+                            <f:facet name="header">
+                                Transactor Ledger Summary Report
+                            </f:facet>
+
+                            <p:column headerText="Currency">
+                                <h:outputText value="#{rtss.currencyTypeName}">
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Sum Debit">
+                                <h:outputText value="#{rtss.sumAmountDebit}">
+                                    <f:convertNumber pattern="###,###.##"/>
+                                </h:outputText>
+                            </p:column>
+
+                            <p:column headerText="Sum Credit">
+                                <h:outputText value="#{rtss.sumAmountCredit}">
+                                    <f:convertNumber pattern="###,###.##"/>
+                                </h:outputText>
+                            </p:column>
+
+                            <p:column headerText="Net Debt">
+                                <h:outputText value="#{rtss.netDebt}">
+                                    <f:convertNumber pattern="###,###.##"/>
+                                </h:outputText>
+                            </p:column>
+
+                            <p:column headerText="Net Credit">
+                                <h:outputText value="#{rtss.netCredit}">
+                                    <f:convertNumber pattern="###,###.##"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+                        <p:panel header="Guest Details" id="FolioDetails">
+                            <h:panelGrid columns="2" id="guest_details">
+                                <h:outputLabel value="GUEST/ORGANIZATION'S NAME:"/>
+                                <h:outputLabel value="#{transactorBean.selectedBillTransactor.transactorNames}" style="font-weight: bold; border-bottom: 1px dashed;"/>
+                                <h:outputLabel value="ADDRESS/ORGANIZATION:"/>
+                                <h:outputLabel value="#{transactorBean.selectedBillTransactor.physicalAddress}" style="font-weight: bold; border-bottom: 1px dashed;"/>
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="No. of Adults:"/>
+                                    <h:outputLabel value="#{guestFolioBean.guestFolio.adults}" style="font-weight: bold; border-bottom: 1px dashed;"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="No. of Children:"/>
+                                    <h:outputLabel value="#{guestFolioBean.guestFolio.children}" style="font-weight: bold; border-bottom: 1px dashed;"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Check in:"/>
+                                    <h:outputLabel value="#{guestFolioBean.guestFolio.startDate}" style="font-weight: bold; border-bottom: 1px dashed;">
+                                        <f:convertDateTime pattern="dd-MM-yyyy" timeZone="EAT"/>
+                                    </h:outputLabel>
+                                </h:panelGrid>
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Check Out:"/>
+                                    <h:outputLabel value="#{guestFolioBean.guestFolio.endDate}" style="font-weight: bold; border-bottom: 1px dashed;">
+                                        <f:convertDateTime pattern="dd-MM-yyyy" timeZone="EAT"/>
+                                    </h:outputLabel>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                        </p:panel>
+                    </h:panelGrid>
+
+                    <p:dataTable tableStyle="width:auto;" id="tblFolioLedger" var="rts" value="#{transactorLedgerBean.getReportTransactorLedger_Guest_Folio(transactorLedger)}" 
+                                 >
+                        <f:facet name="header">
+                            Folio Ledger Report 
+                            <!--<p:commandButton id="toggler" type="button" value="Columns" icon="ui-icon-calculator" />
+                            <p:columnToggler datasource="tblFolioLedger" trigger="toggler" />-->
+                        </f:facet>
+
+                        <p:column headerText="Transaction Date">
+                            <h:outputText value="#{rts.transactionDate}">
+                                <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <!--<p:column headerText="Guest/Customer Name">
+                            <h:outputText value="#{rts.billTransactorNames}">
+                            </h:outputText>
+                        </p:column>-->
+
+                        <!-- <p:column headerText="TransType">
+                            <h:outputText value="#{rts.transactionTypeName}" />
+                        </p:column>
+        
+                       <p:column headerText="Description">
+                           <h:outputText value="#{rts.description}" rendered="#{rts.transactionTypeName eq 'SALE'}">
+                            </h:outputText>
+                        </p:column>     -->           
+                        <p:column headerText="Details">
+                            <h:outputText value="#{rts.description}" rendered="#{rts.transactionTypeName eq 'SALE'}">
+                            </h:outputText>
+                            <h:outputText value="#{rts.itemDescription}" rendered="#{rts.transactionTypeName eq 'SALE INVOICE'}">
+                            </h:outputText>
+                            <h:outputLabel value=" (#{rts.numberOfDays} DAYS X #{rts.numberOfPeople} PEOPLE)" rendered="#{rts.numberOfPeople>1}" />
+                            <h:outputLabel value=" (#{rts.numberOfDays} DAYS X #{rts.numberOfPeople} PERSON)" rendered="#{rts.numberOfPeople==1}" />
+                        </p:column>
+                        <p:column headerText="Posted By">
+                            <h:outputText value="#{rts.postedBy}">
+
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Bill No./Receipt No.">
+                            <h:outputText value="#{rts.transactionId}" rendered="#{rts.transactionTypeName eq 'SALE INVOICE'}">
+                            </h:outputText>
+                            <h:outputText value="#{rts.payId}" rendered="#{rts.transactionTypeName eq 'SALE'}">
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Quantity">
+                            <h:outputText value="#{rts.quantity}" rendered="#{rts.transactionTypeName eq 'SALE INVOICE'}">
+                                <f:convertNumber pattern="###,###.##"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Unit Price">
+                            <h:outputText value="#{rts.unitPrice}" rendered="#{rts.transactionTypeName eq 'SALE INVOICE'}">
+                                <f:convertNumber pattern="###,###.##"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Bill Amounts">
+                            <h:outputText value="#{rts.amountDebit}">
+                                <f:convertNumber pattern="###,###.##"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Currency">
+                            <h:outputText value="#{rts.currencyTypeName}">
+
+                            </h:outputText>
+                        </p:column>
+                        <!--<p:column headerText="Exchange Rate">
+                            <h:outputText value="#{rts.exchangeRate}">
+                                <f:convertNumber pattern="###,###.##"/>
+                            </h:outputText>
+                        </p:column>-->
+
+                        <p:column headerText="Payments">
+                            <h:outputText value="#{rts.amountCredit}">
+                                <f:convertNumber pattern="###,###.##"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Cur Balance">
+                            <h:outputText value="#{transactorLedgerBean.get_ledger_balance(rts.transactorLedgerId, rts.billTransactorId,transactorLedger.transactionDate,transactorLedger.transactionDate2,rts.currencyTypeName)}">
+                                <f:convertNumber pattern="###,###.##"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Remarks">
+                            <h:outputText value="#{rts.remarks}"/>
+                        </p:column>
+                        <p:column headerText="Store">
+                            <h:outputText value="#{rts.storeName}"/>
+                        </p:column>
+
+                    </p:dataTable>
+
+                    <P CLASS="breakhere"></P>                 
+                    <p:dataTable tableStyle="width:auto;" id="tblTransactorLedgerRoomDetails" var="rtlrd" value="#{transactorLedgerBean.getReportTransactorLedgerRoomDetails_Guest_Folio(transactorLedger,guestFolioBean.guestFolio.guestFolioId)}">
+                        <f:facet name="header">
+                            Guest Room Details
+                        </f:facet>               
+                        <p:column headerText="Guest Name">
+                            <h:outputText value="#{rtlrd.transactorName}">
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Room Number">
+                            <h:outputText value="#{rtlrd.roomNumber}">
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Check In Date">
+                            <h:outputText value="#{rtlrd.startDate}">
+                                <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Check Out Date">
+                            <h:outputText value="#{rtlrd.endDate}">
+                                <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Date Checked Out From System">
+                            <h:outputText value="#{rtlrd.actualExitDate}">
+                                <f:convertDateTime pattern="#{companySetting.getDateFormat()} HH:mm:ss" timeZone="#{companySetting.getTimeZone()}"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Checked Out By">
+                            <h:outputText value="#{rtlrd.checkedOutBy}">
+
+                            </h:outputText>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGrid>
+                <h:panelGrid>
+                    <p:commandButton value="PRINT FOLIO" icon="ui-icon-print" type="button">
+                        <p:printer target="vTransactionGrid" rendered="false"/>
+                    </p:commandButton>
+                </h:panelGrid>
+
+            </h:form>
+        </p:dialog>
+    </ui:composition>
+</html>

@@ -1,0 +1,252 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Rooming List</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script  language="javascript">
+            function confirmDelete()
+            {
+                return confirm('Are you sure you want to delete this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+        </script> 
+        <style>
+            body{
+                font-family: "latoregular","Trebuchet MS",Arial,Helvetica,sans-serif !important;
+            }
+            #formReport .ui-button-text {
+                font-family: Verdana, Arial, Helvetica, sans-serif;
+                /*font-size: 12px !important;*/
+            }
+        </style>
+    </h:head>
+    <f:event listener="#{navigationBean.checkAccessDenied('REPORT-ROOMINGLIST', 'View')}" type="preRenderView" />
+    <f:event listener="#{generalUserSetting.initReportRetrievalOption(false)}" type="preRenderView" />
+    <h:body>
+        <ui:include src="Menu.xhtml"/>
+
+        <h:form id="formReport" prependId="false">
+            <p:growl showDetail="true"/>
+            <br/>
+            <p:commandButton value="Print Rooming List" type="button" icon="ui-icon-print">
+                <p:printer target="pnl_rooming_list" />
+            </p:commandButton>
+            <p:commandButton id="newfolio" value="Recent Check Outs" process="@this" update=":recentcheckoutsform" oncomplete="PF('RecentCheckOutsDialog').show();">
+            </p:commandButton>
+            <hr/>
+            <h:panelGrid columns="2" id="grd_rooming_list">
+                <p:outputPanel id="pnl_rooming_list">
+                    <table border="0" style="width:100%;" class="t1">
+                        <thead>
+                            <tr>
+                                <th>RM No.</th>
+                                <th>RM TYPE</th>
+                                <th>GUEST NAME</th>
+                                <th>ORG/SELF</th>
+                                <th>PAX</th>
+                                <th>CHECK-IN DATE</th>
+                                <th>CHECK-OUT DATE</th>
+                                <th>STATUS</th>
+                                <!--<th>REMARKS</th>-->
+                                <!--<th>ACTION</th>-->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <p:repeat value="#{roomingListBean.roomingList}" var="rts">
+                                <tr>
+                                    <td>#{rts.roomNumber}</td>
+                                    <td>#{rts.roomType}</td>
+                                    <td>#{rts.guestName}</td>
+                                    <td>#{rts.org_Self}</td>
+                                    <td>#{rts.numberOfPeople}</td>
+                                    <td><h:outputText value="#{rts.startDate}">
+                                            <f:convertDateTime timeZone="EAT" pattern="dd/MM/YYYY"/>
+                                        </h:outputText></td>
+                                    <td>
+                                        <h:outputText value="#{rts.endDate}">
+                                            <f:convertDateTime timeZone="EAT" pattern="dd/MM/yyyy"/>
+                                        </h:outputText>
+                                    </td>
+                                    <td>    <h:outputText value="#{rts.roomOccupancyStatus}">
+                                        </h:outputText>
+                                    </td>
+                                    <!--<td>
+                                        <h:inputTextarea value="#{rts.remarks}" cols="16" rows="1" rendered="#{rts.roomNumber!=null}">
+                                            <f:ajax execute="@this"  event="blur" listener="#{roomingListBean.EditRemarks(rts.roomOccupancyId, rts.remarks)}" render="@this"/>
+                                        </h:inputTextarea>
+                                    </td>-->
+                                    <!--<td>
+                                       
+                                    </td>-->
+                                </tr>
+                            </p:repeat>
+
+                        </tbody>
+                        <tfoot>
+                            <tr><th colspan="8">Rooming List as of <h:outputText value="#{currentDate}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" type="date"  timeZone="EAT"/>
+                                    </h:outputText></th></tr>
+                        </tfoot>
+                    </table>
+                </p:outputPanel>
+                <p:outputPanel>
+                    <table border="0" style="width:100%;" class="t1">
+                        <thead>
+                            <tr>
+                                <th>RM No.</th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <p:repeat value="#{roomingListBean.roomingList}" var="rts">
+                                <tr>
+                                    <td>
+                                        #{rts.roomNumber} 
+                                    </td>
+                                    <td>
+                                        <p:outputPanel>
+                                            <p:commandLink id="orgstatus" value="Folio Org" process="@this" update=":folioBTform" oncomplete="PF('FolioBTDialog').show();" rendered="#{rts.org_Self eq 'ORG'}">
+                                                <f:setPropertyActionListener target="#{roomingListBean.bill_transactor_id}" value="#{rts.bill_transactor_id}"/>
+                                            </p:commandLink>
+                                            <p:outputLabel value=" | "  rendered="#{rts.org_Self eq 'ORG'}" />
+                                            <p:commandLink id="personalstatus" value="Folio Personal" process="@this" update=":guestfoliohistoryform" oncomplete="PF('GuestFolioHistoryDialog').show();" rendered="#{rts.roomOccupancyStatus eq 'Checked In'}">
+                                                <f:setPropertyActionListener target="#{roomingListBean.room_number}" value="#{rts.roomNumber}"/>
+                                            </p:commandLink>
+                                            <p:outputLabel value=" | "  rendered="#{rts.roomOccupancyStatus eq 'Checked In'}" />
+                                            <p:commandLink rendered="#{rts.roomOccupancyStatus eq 'Checked In'}" value="Check Out" actionListener="#{roomingListBean.ChangeRoomOccupancyStatus(rts.room_id,'Check Out')}" update="@form" process="@this">
+                                                <f:setPropertyActionListener target="#{roomingListBean.room_id}" value="#{rts.room_id}"/>
+                                                <p:confirm header="Confirmation" message="Are you sure you want to check out?" icon="ui-icon-alert" />
+                                            </p:commandLink> 
+                                            <p:outputLabel value=" | "  rendered="#{rts.roomOccupancyStatus eq 'Checked In'}" />
+                                            <p:commandLink id="extendstay" value="Extend Stay" process="@this" update=":saleinvoicetransform" oncomplete="PF('SaleInvoiceTransRoomDialog').show();" rendered="#{rts.roomOccupancyStatus eq 'Checked In'}" actionListener="#{transExtendStay.reset()}">
+                                                <f:setPropertyActionListener target="#{transExtendStay.roomNumber}" value="#{rts.roomNumber}"/>
+                                                <f:setPropertyActionListener target="#{transExtendStay.rate}" value="#{rts.rate}"/>
+                                                <f:setPropertyActionListener target="#{transExtendStay.startDate}" value="#{rts.startDate}"/>
+                                                <f:setPropertyActionListener target="#{transExtendStay.prev_EndDate}" value="#{rts.endDate}"/>
+                                                <f:setPropertyActionListener target="#{transExtendStay.guest}" value="#{rts.guestName}"/>
+                                                <f:setPropertyActionListener target="#{transExtendStay.transaction_id}" value="#{rts.transaction_id}"/>
+                                                <f:setPropertyActionListener target="#{transExtendStay.item_id}" value="#{rts.item_id}"/>
+                                                <f:setPropertyActionListener target="#{transExtendStay.transactionDate}" value="#{transExtendStay.get_current_date()}"/>
+                                            </p:commandLink>
+                                            <p:outputLabel value=" | " rendered="#{rts.roomOccupancyStatus eq 'Reserved'}" />
+                                            <p:commandLink rendered="#{rts.roomOccupancyStatus eq 'Reserved'}" value="Cancel Reservation" actionListener="#{roomingListBean.ChangeRoomOccupancyStatus(rts.roomOccupancyId,'Cancel')}" update="@form" process="@this">
+                                                <p:confirm header="Confirmation" message="Are you sure you want to check out?" icon="ui-icon-alert" />
+                                            </p:commandLink>
+                                            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                                            </p:confirmDialog>
+                                        </p:outputPanel>               
+                                    </td>
+                                </tr>
+                            </p:repeat>
+
+                        </tbody>
+                        <tfoot>
+                            <tr><th colspan="8">&nbsp;</th></tr>
+                        </tfoot>
+                    </table>
+                </p:outputPanel>
+            </h:panelGrid>
+
+            <br/>
+
+            <p:dataTable tableStyle="width:auto;" id="tblReportReservationList" var="rts" value="#{roomingListBean.reservionList}" 
+                         paginator="true" rows="500" 
+                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}" 
+                         rowsPerPageTemplate="10,20,50,100,200,500">
+                <f:facet name="header">
+                    Reservation List (#{reservationListBean.reservationList.size()} Room(s) Returned)
+                    <p:commandButton id="toggler" type="button" value="Columns" icon="ui-icon-calculator" />
+                    <p:columnToggler datasource="tblReportReservationList" trigger="toggler" />
+                </f:facet>
+
+                <p:column headerText="RESERVATION TYPE">
+                    <h:outputText value="#{rts.transactionReasonName}">
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="GUEST NAME">
+                    <h:outputText value="#{rts.transactorName}">
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="CHECK-IN DATE">
+                    <h:outputText value="#{rts.startDate}">
+                        <f:convertDateTime timeZone="EAT" pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="CHECK-OUT DATE">
+                    <h:outputText value="#{rts.endDate}">
+                        <f:convertDateTime timeZone="EAT" pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="PAX">
+                    <h:outputText value="#{rts.numberOfPersons}">
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="RESERVED BY">
+                    <h:outputText value="#{rts.reservedBy}">
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="OTHER DETAILS">
+                    <h:outputText value="#{rts.terms}">
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="STATUS">
+                    <h:outputText value="#{rts.transactionStatus}">
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="ACTION">
+                    <p:commandButton rendered="#{rts.transactionStatus eq 'Reserved'}" value="Cancel Reservation" actionListener="#{roomingListBean.ChangeTransactionStatus(rts.transactionId)}" update="@form" process="@this">
+                        <p:confirm header="Confirmation" message="Are you sure you want to check out?" icon="ui-icon-alert" />
+                    </p:commandButton>
+
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                    </p:confirmDialog>
+                </p:column>
+            </p:dataTable>
+
+            <h:panelGrid id="id15" columns="1" style="margin-top: 20px;">
+                <p:panel header="Export Reservation Report">
+                    <h:commandLink>
+                        <p:commandButton icon="ui-icon-circle-arrow-s" value="Excel"/>
+                        <p:dataExporter type="xls" target="tblReportReservationList" fileName="BranchReportReservationList" />
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <p:commandButton icon="ui-icon-circle-arrow-s" value="PDF"/>
+                        <p:dataExporter type="pdf" target="tblReportReservationList" fileName="BranchReportReservationList"/>
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <p:commandButton icon="ui-icon-circle-arrow-s" value="CSV"/>
+                        <p:dataExporter type="csv" target="tblReportReservationList" fileName="BranchReportReservationList" />
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <p:commandButton icon="ui-icon-circle-arrow-s" value="XML"/>
+                        <p:dataExporter type="xml" target="tblReportReservationList" fileName="BranchReportReservationList" />
+                    </h:commandLink>
+                </p:panel>
+            </h:panelGrid>
+        </h:form>
+        <ui:include src="SaleInvoiceTransRoomDialog.xhtml"/>
+        <ui:include src="ReportRoomingList_Recent_Check_Outs.xhtml"/>
+        <ui:include src="GuestFolioDialog_History.xhtml"/>
+        <ui:include src="GuestFolioDialog_History_Bill_Transactor.xhtml"/>
+        <ui:include src="ReportTransactorLedger_Grand_Dialog.xhtml"/>
+    </h:body>
+</html>
+

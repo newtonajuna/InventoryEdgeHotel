@@ -1,0 +1,213 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Company Setting</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script  language="javascript">
+            function confirmDelete()
+            {
+                return confirm('Are you sure you want to delete this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+        </script> 
+    </h:head>
+    <f:event listener="#{navigationBean.checkAccessDenied('SETTING', 'View')}" type="preRenderView" />
+    <h:body>
+        <ui:include src="Menu.xhtml"/>
+        <h:form id="form" styleClass="clsMainFrom" enctype="multipart/form-data">
+
+            <h:panelGrid styleClass="clsGridMainHeader" columns="1">
+                <h:outputLabel styleClass="clsLabelTop" id="olblcategoryHeader" value="SETTINGS for #{companySetting.getBranchCode()}"/>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainInput" columns="4">
+                <h:outputLabel styleClass="clsLabel" value="Company Name (From License)"/>
+                <h:inputText styleClass="clsInput" value="#{companySetting.getLICENSE_CLIENT_NAME()}" disabled="true" />
+                
+                <h:outputLabel styleClass="clsLabel" value="Branch Code"/>
+                <h:inputText styleClass="clsInput" value="#{companySetting.EBranchCode}" disabled="true" />
+                
+                <h:outputLabel styleClass="clsLabel" value="Branch Id"/>
+                <h:inputText styleClass="clsInput" value="#{companySetting.EBranchId}" disabled="true" />
+                
+                <h:outputLabel styleClass="clsLabel" value="Physical Address"/>
+                <h:inputText styleClass="clsInput" value="#{companySetting.EPhysicalAddress}" />
+                
+                <h:outputLabel styleClass="clsLabel" value="Phone"/>
+                <h:inputText styleClass="clsInput" value="#{companySetting.EPhone}" />
+                
+                <h:outputLabel styleClass="clsLabel" value="Fax"/>
+                <h:inputText styleClass="clsInput" value="#{companySetting.EFax}" />
+                
+                <h:outputLabel styleClass="clsLabel" value="Email"/>
+                <h:inputText styleClass="clsInput" value="#{companySetting.EEmail}" />
+                
+                <h:outputLabel styleClass="clsLabel" value="Website"/>
+                <h:inputText styleClass="clsInput" value="#{companySetting.EWebsite}" />
+                
+                <h:outputLabel styleClass="clsLabel" value="Currency Used"/>
+                <h:inputText styleClass="clsInput" value="#{companySetting.ECurrencyUsed}" />
+                
+                <h:outputLabel styleClass="clsLabel" value=""/>
+                <h:outputLabel styleClass="clsLabel" value=""/>
+                
+                <h:outputLabel styleClass="clsLabel" value="Tax Identity"/>
+                <h:inputText styleClass="clsInput" value="#{companySetting.ETaxIdentity}" />
+                
+                <h:outputLabel styleClass="clsLabel" value="VAT(%)"/>
+                <h:inputText styleClass="clsInput" value="#{companySetting.EVatPerc}" />
+                
+                <h:outputLabel styleClass="clsLabel" value="Sale prices are VAT Inclusive?"/>
+                <h:selectOneMenu styleClass="clsMenu" value="#{companySetting.EIsVatInclusive}">
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabel" value="Is Trade-Discount VAT Liable?"/>
+                <h:selectOneMenu styleClass="clsMenu" value="#{companySetting.EIsTradeDiscountVatLiable}">
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabel" value="Is Cash-Discount VAT Liable?"/>
+                <h:selectOneMenu styleClass="clsMenu" value="#{companySetting.EIsCashDiscountVatLiable}">
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabel" value="Allow Cash-Discount?"/>
+                <h:selectOneMenu styleClass="clsMenu" value="#{companySetting.EIsAllowDiscount}">
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabel" value="Allow Debt?"/>
+                <h:selectOneMenu styleClass="clsMenu" value="#{companySetting.EIsAllowDebt}">
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabel" value="Is Customer Mandatory?"/>
+                <h:selectOneMenu styleClass="clsMenu" value="#{companySetting.EIsCustomerMandatory}">
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabel" value="Is Supplier Mandatory?"/>
+                <h:selectOneMenu styleClass="clsMenu" value="#{companySetting.EIsSupplierMandatory}">
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabel" value="Is MapItems Active?"/>
+                <h:selectOneMenu styleClass="clsMenu" value="#{companySetting.EIsMapItemsActive}">
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabel" value="Award Amount Per Point"/>
+                <h:inputText styleClass="clsInput" value="#{companySetting.EAwardAmountPerPoint}" />
+                
+                <h:outputLabel styleClass="clsLabel" value="Spend Amount Per Point"/>
+                <h:inputText styleClass="clsInput" value="#{companySetting.ESpendAmountPerPoint}" />
+                
+                <h:outputLabel styleClass="clsLabel" value="Sloghan"/>
+                <h:inputText styleClass="clsInput" value="#{companySetting.ESloghan}" />
+                <h:outputLabel styleClass="clsLabel" value="Allow Auto Unpack on SALE?"/>
+                <h:selectOneMenu styleClass="clsMenu" value="#{companySetting.EIsAllowAutoUnpack}">
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabel" value="Sales Receipt/Invoice Name"/>
+                <h:inputText styleClass="clsInput" value="#{companySetting.ESalesReceiptName}" />
+                <h:outputLabel styleClass="clsLabel" value="Show Developer on Sales Receipt/Invoice?"/>
+                <h:selectOneMenu styleClass="clsMenu" value="#{companySetting.EIsShowDeveloper}">
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabel" value="Developer Email"/>
+                <h:inputText styleClass="clsinput" value="#{companySetting.EDeveloperEmail}"/>
+                
+                <h:outputLabel styleClass="clsLabel" value="Developer Phone"/>
+                <h:inputText styleClass="clsinput" value="#{companySetting.EDeveloperPhone}"/>
+                
+                <h:outputLabel styleClass="clsLabel" value="Current Logo"/>
+                <h:graphicImage id="gimgLogo" alt="L.O.G.O" value="#{companySetting.getLogoUrl()}" style="width:150px;width:150px" />
+                <h:outputLabel styleClass="clsLabel" value="Specify Logo Name (MaxSize:64KB MaxDimension:200x200)"/>
+                <h:inputTextarea styleClass="clsinput" value="#{companySetting.ELogoUrl}"/>
+                
+                <h:outputLabel styleClass="clsLabel" value="Show Logo on Sales Receipt/Invoice?"/>
+                <h:selectOneMenu styleClass="clsMenu" value="#{companySetting.EShowLogoInvoice}">
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabel" value="Show Branch on Sales Receipt/Invoice?"/>
+                <h:selectOneMenu styleClass="clsMenu" value="#{companySetting.EShowBranchInvoice}">
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabel" value="Show Store on Sales Receipt/Invoice?"/>
+                <h:selectOneMenu styleClass="clsMenu" value="#{companySetting.EShowStoreInvoice}">
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabel" value="Sales Receipt Version?"/>
+                <h:selectOneMenu styleClass="clsMenu" value="#{companySetting.ESalesReceiptVersion}">
+                    <f:selectItem itemLabel="1-Small Width" itemValue="1"/>
+                    <f:selectItem itemLabel="2-A4 Size" itemValue="2"/>
+                    <f:selectItem itemLabel="3-Very Small Width" itemValue="3"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabel" value="Time Zone"/>
+                <h:inputText styleClass="clsinput" value="#{companySetting.ETimeZone}"/>
+                
+                <h:outputLabel styleClass="clsLabel" value="Date Format"/>
+                <h:inputText styleClass="clsinput" value="#{companySetting.EDateFormat}"/>
+                
+                <h:outputLabel styleClass="clsLabel" value="Enforce Selection of Transaction User?"/>
+                <h:selectOneMenu styleClass="clsMenu" value="#{companySetting.EEnforceTransUserSelect}">
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabel" value="Show VAT Analysis on Sales Receipt/Invoice?"/>
+                <h:selectOneMenu styleClass="clsMenu" value="#{companySetting.EShowVatAnalysisInvoice}">
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabel" value="Store Equivalent Name"/>
+                <h:inputText styleClass="clsinput" value="#{companySetting.EStoreEquivName}"/>
+
+            </h:panelGrid>
+            <h:outputLabel value="LICENSE KEY (Copy and paste the License Key here)"/>
+            <h:inputText style="width: 1050px;font-size: 12px;" id="license_key" value="#{companySetting.ELicenseKey}" required="true" autocomplete="off"/>
+            
+
+           <h:panelGrid styleClass="clsGridMainCommands" columns="2">
+                <h:commandButton styleClass="clsButton" id="cmdbSave" value="UPDATE">
+                    <f:actionListener binding="#{companySettingBean.saveCompanySetting(companySetting)}" />
+                </h:commandButton>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainMessages" columns="1">
+                <h:outputLabel styleClass="clsActionMessage" id="olblActionMessage" value="#{companySettingBean.actionMessage}"/>
+                <h:messages id="msgsMainMessage" style="color: red"/><br/>
+            </h:panelGrid>
+            
+        </h:form>
+    </h:body>
+</html>
+

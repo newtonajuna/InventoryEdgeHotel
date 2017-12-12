@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Stock-In Report</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script  language="javascript">
+            function confirmDelete()
+            {
+                return confirm('Are you sure you want to delete this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+        </script> 
+    </h:head>
+    <f:event listener="#{navigationBean.checkAccessDenied('REPORT-STOCK', 'View')}" type="preRenderView" />
+    <f:event listener="#{generalUserSetting.initReportRetrievalOption(false)}" type="preRenderView" />
+    <h:body>
+        <ui:include src="Menu.xhtml"/>
+        
+        <h:form id="formReport">
+            <h:panelGrid id="id0" columns="1" styleClass="clsPanelReportFilterTitle">
+                <h:outputLabel styleClass="clsLabelReportFilterTitle" value="Store-wise Stock(In) Details Report"/>
+            </h:panelGrid>
+            <h:panelGrid id="id1" columns="8" styleClass="clsPanelReportFilter">
+                <h:outputLabel styleClass="clsLabelReportFilter" value="ACTIVE:"/>
+                <h:selectBooleanCheckbox label="Active" value="#{generalUserSetting.reportRetrievalOption}">
+                </h:selectBooleanCheckbox>
+                <p:outputLabel styleClass="clsLabelReportFilter" id="id2" value="Store:"/>
+                <h:selectOneMenu styleClass="clsInputReportFilter" id="menuFromStore" value="#{reportStock.storeId}" >
+                    <f:selectItem itemLabel="" itemValue="0"/>
+                    <f:selectItems value="#{storeBean.stores}" var="tst" itemLabel="#{tst.storeName}" itemValue="#{tst.storeId}"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabelReportFilter" value="Category:"/>
+                <h:selectOneMenu styleClass="clsInputReportFilter" id="menuCategory" value="#{reportStock.categoryId}">
+                    <f:selectItem itemLabel="" itemValue="0"/>
+                    <f:selectItems value="#{categoryBean.categories}" var="c" itemLabel="#{c.categoryName}" itemValue="#{c.categoryId}"/>
+                    <f:ajax event="change" render="menuSubCategory"/>
+                </h:selectOneMenu>
+                <h:outputLabel styleClass="clsLabelReportFilter" value="SubCategory:"/>
+                <h:selectOneMenu styleClass="clsInputReportFilter" id="menuSubCategory" value="#{reportStock.subCategoryId}">
+                    <f:selectItem itemLabel="" itemValue="0"/>
+                    <f:selectItems value="#{subCategoryBean.getSubCategoriesByCategoryId(reportStock.categoryId)}" var="s" itemLabel="#{s.subCategoryName}" itemValue="#{s.subCategoryId}"/>
+                </h:selectOneMenu>
+                
+                <p:outputLabel styleClass="clsLabelReportFilter" id="id10" value="ItemExpiryDate(From):"/>
+                <p:calendar styleClass="clsInputReportFilter" id="calExpireDateFrom" pattern="dd-MM-yyyy" navigator="true" showButtonPanel="true" readonlyInput="false" value="#{reportStock.itemExpDate}">
+                </p:calendar>
+                <p:outputLabel styleClass="clsLabelReportFilter" id="id11" value="ItemExpiryDate(To):"/>
+                <p:calendar styleClass="clsInputReportFilter" id="calExpireDateTo" pattern="dd-MM-yyyy" navigator="true" showButtonPanel="true" readonlyInput="false" value="#{reportStock.itemExpDate2}">
+                </p:calendar>
+                
+                <p:commandButton styleClass="clsButtonReportFilter" id="cmdbSearch" value="Search" update="tblReportStock pnlgActionMessage" />
+            </h:panelGrid>
+            <h:panelGrid id="pnlgActionMessage">
+                <p:outputLabel value="#{reportStockBean.actionMessage}" style="color: red;"/>
+            </h:panelGrid>
+            
+            <p:dataTable tableStyle="width:auto;" id="tblReportStock" var="rts" value="#{reportStockBean.getActiveReportStock(reportStock,generalUserSetting.reportRetrievalOption)}" 
+                          paginator="true" rows="10" 
+                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}" 
+                         rowsPerPageTemplate="10,20,50,100,200,500">
+                    <f:facet name="header">
+                        Store-wise Stock In Details Report (#{reportStockBean.getActiveReportStockCount()} Items Returned)
+                        <p:commandButton id="toggler" type="button" value="Columns" icon="ui-icon-calculator" />
+                        <p:columnToggler datasource="tblReportStock" trigger="toggler" />
+                    </f:facet>
+                    
+                    <p:column headerText="Store">
+                        <h:outputText value="#{rts.storeName}">
+                        </h:outputText>
+                    </p:column>
+                
+                    <p:column headerText="Description">
+                        <h:outputText value="#{rts.description}">
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Unit">
+                        <h:outputText value="#{rts.unitName}">
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Batch">
+                        <h:outputText value="#{rts.batchno}">
+                        </h:outputText>
+                    </p:column>
+                
+                    <p:column headerText="Qty">
+                        <h:outputText value="#{rts.currentQty}">
+                        </h:outputText>
+                    </p:column>
+                
+                    <p:column headerText="Category">
+                        <h:outputText value="#{rts.categoryName}">
+                        </h:outputText>
+                    </p:column>
+                    
+                    <p:column headerText="SubCategory">
+                        <h:outputText value="#{rts.subCategoryName}">
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="MnfDate">
+                        <h:outputText value="#{rts.itemMnfDate}">
+                            <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="ExpDate">
+                        <h:outputText value="#{rts.itemExpDate}">
+                            <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                        </h:outputText>
+                    </p:column>
+                    
+             </p:dataTable>
+            
+            <h:panelGrid id="id15" columns="1" style="margin-top: 20px;">
+                <p:panel header="Export Store-wise Stock In Details Report">
+                    <h:commandLink>
+                        <p:commandButton icon="ui-icon-circle-arrow-s" value="Excel"/>
+                        <p:dataExporter type="xls" target="tblReportStock" fileName="StoreStockInDetailsReport" />
+                    </h:commandLink>
+
+                    <h:commandLink>
+			<p:commandButton icon="ui-icon-circle-arrow-s" value="PDF"/>
+			<p:dataExporter type="pdf" target="tblReportStock" fileName="StoreStockInDetailsReport"/>
+                    </h:commandLink>
+		
+                    <h:commandLink>
+			<p:commandButton icon="ui-icon-circle-arrow-s" value="CSV"/>
+			<p:dataExporter type="csv" target="tblReportStock" fileName="StoreStockInDetailsReport" />
+                    </h:commandLink>
+		
+                    <h:commandLink>
+			<p:commandButton icon="ui-icon-circle-arrow-s" value="XML"/>
+			<p:dataExporter type="xml" target="tblReportStock" fileName="StoreStockInDetailsReport" />
+                    </h:commandLink>
+                </p:panel>
+             </h:panelGrid>
+             
+        </h:form>
+    </h:body>
+</html>
+

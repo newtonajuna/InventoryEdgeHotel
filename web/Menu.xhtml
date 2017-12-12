@@ -1,0 +1,284 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>WINGERsoft Hotel Master</title>
+    </h:head>
+    <h:body>
+        <h:form>  
+            <p:tooltip for="mnuid_saleOther" value="Click this to sale other Products and services e.g Laundry, Beverages, Food e.t.c!"/>
+            <p:tooltip for="mnuid_saleAccomodation" value="Click this to sale Rooms e.t.c!"/>
+            <p:tooltip for="mnuid_saleQuotation" value="Click this to make a pro forma invoice!"/>
+            <p:tooltip for="mnuid_reservation" value="Click this to make a reservation e.g for Wedding, workshop e.t.c!"/>
+            <p:tooltip for="mnuid_purchaseReceiveGoods" value="Click this to receice goods that have been delivered on order!"/>
+            <p:tooltip for="mnuid_purchaseInvoice" value="Click this to Generate a Purchase Invoice!"/>
+            <p:tooltip for="mnuid_purchaseOrder" value="Click this to Generate a Purchase Order!"/>
+            <p:tooltip for="mnuid_stockTransfer" value="Click this to Transfer stock from one store to another!"/>
+            <p:tooltip for="mnuid_stockTransferRequest" value="Click this to Request Transfer From one store to another!"/>
+            <p:tooltip for="mnuid_unpack" value="Click this to Unpack a product e.g A bottle to tots!"/>
+            <p:tooltip for="mnuid_dispose" value="Click this to Dispose a product e.g damaged, expired, lost!"/>
+            <p:tooltip for="mnuid_payin" value="Click this to receive a payment from  a customer!"/>
+            <p:tooltip for="mnuid_payout" value="Click this to make a payment to a customer!"/>
+            <p:tooltip for="mnuid_saleAccomodationGroupCheckin" value="Click here to check in a group of people with one bill!"/>
+            <h:panelGrid columns="2" style="background-color: lightblue;width: 100%;">
+                <p:outputLabel style="float: left;" id="mnuid_olblTitle"  value="WINGERsoft Hotel Master"/>
+                <p:outputLabel style="float: right"  value="#{companySetting.getLICENSE_CLIENT_NAME()} - #{companySetting.getBranchCode()}  (Store : #{generalUserSetting.getCurrentStore().getStoreName()})"/>
+            </h:panelGrid>
+            <p:menubar>  
+                <p:menuitem value="Home" action="#{navigationBean.redirectToHome2()}" />
+
+                <p:submenu label="Transaction" rendered="#{generalUserSetting.getLoginType()==1}"> 
+                    <p:separator />
+                    <p:submenu label="Reservation"> 
+                        <p:menuitem id="mnuid_reservation" value="New Reservation" action="#{navigationBean.redirectToReservation()}" />
+                    </p:submenu>
+                    <p:separator />
+                    <p:submenu label="Sale">
+                        <p:separator />
+                        <p:menuitem id="mnuid_saleQuotation" value="Pro Forma Invoice" action="#{navigationBean.redirectToRetailSaleQuotation()}" />
+                        <p:separator />
+                        <p:submenu label="New Sale">  
+                            <p:separator />
+                            <p:menuitem id="mnuid_saleAccomodation" value="Single Checkin" action="#{navigationBean.redirectToRetailSaleInvoiceRoom()}" />
+                            <p:separator />
+                            <p:menuitem id="mnuid_saleAccomodationGroupCheckin" value="Group Checkin" action="#{navigationBean.redirectToRetailSaleInvoiceRoomGroupCheckIn()}" />
+                            <p:separator />
+                            <p:menuitem id="mnuid_saleOther" value="Other Products and Services" action="#{navigationBean.redirectToRetailSaleInvoice()}" />
+                            <p:separator />
+                        </p:submenu>
+                        <p:separator />
+                        <p:submenu label="Folio">  
+                            <p:separator />
+                            <p:menuitem id="mnuid_saleFolio" value="Print Folio" action="#{navigationBean.redirectToReportTransactorLedger_Grand()}" />
+                            <p:separator />
+                            <p:menuitem id="mnuid_saleCreateFolio" value="Create/Edit Folio" action="#{navigationBean.redirectToGuestFolio()}" />
+                            <p:separator />
+                        </p:submenu>
+                        <p:separator />
+                    </p:submenu>
+                    <p:separator /> 
+                    <p:submenu label="Purchase">  
+                        <p:separator />
+                        <p:menuitem id="mnuid_purchaseOrder" value="New Purchase Order" action="#{navigationBean.redirectToPurchaseOrder()}" />
+                        <p:separator />
+                        <p:menuitem id="mnuid_purchaseReceiveGoods" value="New Goods Received Note" action="#{navigationBean.redirectToPurchaseReceiveItem()}" />
+                        <p:separator />
+                        <p:menuitem id="mnuid_purchaseInvoice" value="New Purchase Invoice" action="#{navigationBean.redirectToPurchaseInvoice()}" />
+                        <p:separator />
+                    </p:submenu>
+                    <p:separator />
+                    <p:submenu label="Stock Transfer">  
+                        <p:separator />
+                        <p:menuitem id="mnuid_stockTransferRequest" value="New Stock Transfer Request" action="#{navigationBean.redirectToTransferRequest()}" /> 
+                        <p:separator />
+                        <p:menuitem id="mnuid_stockTransfer" value="New Stock Transfer" action="#{navigationBean.redirectToTransfer()}" /> 
+                        <p:separator />
+                    </p:submenu>
+                    <p:separator />
+                    <p:menuitem id="mnuid_unpack" value="Unpack Stock" action="#{navigationBean.redirectToUnpack()}" />
+                    <p:separator /> 
+                    <p:menuitem id="mnuid_dispose" value="Dispose Stock" action="#{navigationBean.redirectToDispose()}" /> 
+                    <p:separator />
+                    <p:menuitem value="View Transaction" action="#{navigationBean.redirectToTransView()}" />
+                    <p:separator />
+                    <p:submenu label="Payment">  
+                        <p:separator />
+                        <p:menuitem id="mnuid_payin" value="Make Payment IN" action="#{navigationBean.redirectToPayIN()}" />  
+                        <p:separator />
+                        <p:menuitem id="mnuid_payout" value="Make Payment OUT" action="#{navigationBean.redirectToPayOUT()}" /> 
+                    </p:submenu>
+                    <p:separator />
+                </p:submenu>  
+
+                <p:submenu label="Item" rendered="#{generalUserSetting.getLoginType()==1}">  
+                    <p:separator />
+                    <p:menuitem value="Units of Measure" action="#{navigationBean.redirectToUnit()}"/> 
+                    <p:separator />
+                    <p:submenu label="Categorise Items">   
+                        <p:separator />
+                        <p:menuitem value="Category" action="#{navigationBean.redirectToCategory()}" /> 
+                        <p:separator />
+                        <p:menuitem value="SubCategory" action="#{navigationBean.redirectToSubCategory()}" />  
+                        <p:separator />
+                    </p:submenu> 
+                    <p:separator />
+                    <p:menuitem value="Item Details" action="#{navigationBean.redirectToItem()}" /> 
+                    <p:separator />
+                    <p:menuitem value="Room Category" action="#{navigationBean.redirectToRoomCategory()}" /> 
+                    <p:separator />
+                    <p:menuitem value="Rooms" action="#{navigationBean.redirectToRoom()}" /> 
+                    <p:separator />
+                    <p:menuitem value="Room Package" action="#{navigationBean.redirectToRoomPackage()}" /> 
+                    <p:separator />
+                    <p:menuitem value="Item Location" action="#{navigationBean.redirectToItemLocation()}" />
+                    <p:separator />
+                    <p:menuitem value="Map Items" action="#{navigationBean.redirectToItemMap()}" /> 
+                    <p:separator />
+                    <p:submenu label="Trade Discount">   
+                        <p:separator />
+                        <p:menuitem value="Discount Package(s)" action="#{navigationBean.redirectToDiscountPackage()}" /> 
+                        <p:separator />
+                        <p:menuitem value="Discount Package Item(s)" action="#{navigationBean.redirectToDiscountPackageItem()}" />  
+                        <p:separator />
+                    </p:submenu> 
+                    <p:separator />
+                </p:submenu>  
+
+                <p:submenu label="Settings" rendered="#{generalUserSetting.getLoginType()==1}"> 
+                    <p:separator />
+                    <p:menuitem value="Branch Settings" action="#{navigationBean.redirectToCompanySetting()}" /> 
+                    <p:separator />
+                    <p:submenu label="Branch Stores">  
+                        <p:separator />
+                        <p:menuitem value="Stores Details" action="#{navigationBean.redirectToStore()}" /> 
+                        <p:separator />
+                        <p:menuitem value="Store Locations" action="#{navigationBean.redirectToLocation()}" /> 
+                        <p:separator />
+                    </p:submenu> 
+                    <p:separator />
+                    <p:menuitem value="Transaction Types" action="#{navigationBean.redirectToTransactionType()}" /> 
+                    <p:separator />
+                    <p:menuitem value="Transaction Reasons" action="#{navigationBean.redirectToTransactionReason()}" />   
+                    <p:separator />
+                    <p:menuitem value="Payment Methods" action="#{navigationBean.redirectToPayMethod()}" />   
+                    <p:separator />
+                    <p:menuitem value="Currency Type" action="#{navigationBean.redirectToCurrencyType()}" /> 
+                    <p:separator />
+                    <p:submenu label="Users and Groups">  
+                        <p:separator />
+                        <p:menuitem value="Group Details" action="#{navigationBean.redirectToGroupDetail()}" /> 
+                        <p:separator />
+                        <p:menuitem value="Group Rights" action="#{navigationBean.redirectToGroupRight()}" /> 
+                        <p:separator />
+                        <p:menuitem value="User Details" action="#{navigationBean.redirectToUserDetail()}" /> 
+                        <p:separator />
+                        <p:menuitem value="Group Users" action="#{navigationBean.redirectToGroupUser()}" /> 
+                        <p:separator />
+                        <p:menuitem value="User Category" action="#{navigationBean.redirectToUserCategory()}" /> 
+                        <p:separator />
+                        <p:menuitem value="User Item Earning" action="#{navigationBean.redirectToUserItemEarn()}" /> 
+                        <p:separator />
+                    </p:submenu>
+
+                    <p:separator />
+                    <p:menuitem value="View License Details" action="#{navigationBean.redirectToLicenseDetail()}" />   
+                    <p:separator />
+
+                </p:submenu>  
+
+                <p:submenu label="Client" rendered="#{generalUserSetting.getLoginType()==1}">  
+                    <p:separator />
+                    <p:menuitem value="Customer Details" action="#{navigationBean.redirectToTransactorCustomer()}" /> 
+                    <p:separator />
+                    <p:menuitem value="Supplier Details" action="#{navigationBean.redirectToTransactorSupplier()}" /> 
+                    <p:separator />
+                    <p:menuitem value="Scheme Details" action="#{navigationBean.redirectToTransactorScheme()}" /> 
+                    <p:separator />
+                    <p:menuitem value="Provider Details" action="#{navigationBean.redirectToTransactorProvider()}" /> 
+                    <p:separator />
+                </p:submenu>    
+
+                <p:submenu label="Inter-Branch" rendered="#{generalUserSetting.getLoginType()==2}"> 
+                    <p:separator />
+                    <p:menuitem value="Branch Details" action="#{navigationBean.redirectToBranch()}" /> 
+                    <p:separator />
+                    <p:submenu label="Points">  
+                        <p:separator />
+                        <p:menuitem value="Points Card Details" action="#{navigationBean.redirectToPointsCard()}" />
+                        <p:separator />
+                        <p:menuitem value="Points Transactions" action="#{navigationBean.redirectToPointsTransaction()}" />
+                        <p:separator />
+                    </p:submenu>
+                    <p:separator />
+                </p:submenu>
+
+                <p:submenu label="Reports" rendered="#{generalUserSetting.getLoginType()==1}">
+                    <p:separator />
+                    <p:submenu label="Items">
+                        <p:separator />
+                        <p:menuitem value="All Items Report" action="#{navigationBean.redirectToReportItem()}" />
+                        <p:separator />
+                        <p:menuitem value="Item Location Report" action="#{navigationBean.redirectToReportItemLocation()}" />
+                        <p:separator />
+                    </p:submenu>
+
+                    <p:separator />
+                    <p:submenu label="Guests/Customers">
+                        <p:separator />
+                        <p:menuitem value="All Guests/Customers Report" action="#{navigationBean.redirectToReportTransactor()}" />
+                        <p:separator />
+                        <p:menuitem value="Guest/Customer Folio Report - Detail" action="#{navigationBean.redirectToReportTransactorLedger()}" />
+                        <p:separator />
+                        <p:menuitem value="Guest/Customer Folio Report - Summary" action="#{navigationBean.redirectToReportTransactorLedgerSummary()}" />
+                        <p:separator />
+                        <p:menuitem value="Guest/Customer Bill Report" action="#{navigationBean.redirectToReportBill()}" />
+                        <p:separator />
+                    </p:submenu>
+
+                    <p:separator />
+                    <p:submenu label="Transactions">  
+                        <p:separator />
+                        <p:menuitem value="All Transactions Report" action="#{navigationBean.redirectToReportTransaction()}" />
+                        <p:separator />
+                        <p:menuitem value="All Transaction Items Report" action="#{navigationBean.redirectToReportTransactionItem()}" />
+                        <p:separator />
+                        <p:menuitem value="User Earn Report" action="#{navigationBean.redirectToReportTransactionUserEarn()}" />
+                        <p:separator />
+                    </p:submenu>
+
+                    <p:separator />
+                    <p:submenu label="Payments">
+                        <p:separator />
+                        <p:menuitem value="All Payments Report" action="#{navigationBean.redirectToReportPay()}" />
+                        <p:separator />
+                    </p:submenu>
+
+
+                    <p:separator />
+                    <p:submenu label="Stock(In and Out)">  
+                        <p:separator />
+                        <p:submenu label="Store-wise"> 
+                            <p:separator />
+                            <p:menuitem value="Stock(In and Out) Report" action="#{navigationBean.redirectToReportStockTotal()}" />
+                            <p:separator />
+                            <p:menuitem value="Stock(In) Details Report" action="#{navigationBean.redirectToReportStockIn()}" />
+                            <p:separator />
+                        </p:submenu>
+                        <p:separator />
+                        <p:submenu label="Branch-wise"> 
+                            <p:separator />
+                            <p:menuitem value="Branch Item Total Stock(In and Out) Report" action="#{navigationBean.redirectToReportStockAll()}" />
+                            <p:separator />
+                        </p:submenu>
+                        <p:separator />
+                    </p:submenu>
+
+                </p:submenu>  
+
+                <p:submenu label="Help" rendered="#{1==1}">  
+                    <p:separator />
+                    <p:menuitem value="Help" action="Menu?faces-redirect=true" />
+                    <p:separator />
+                </p:submenu>   
+
+                <p:submenu label="#{generalUserSetting.getCurrentUser().userName}" style="background-color:lightsalmon">  
+                    <p:separator />
+                    <p:menuitem value="Logout" action="#{login.userLogout()}" />
+                    <p:separator />
+                    <p:menuitem value="My Account" action="#{navigationBean.redirectToMyAccount()}" />
+                    <p:separator />
+                </p:submenu> 
+
+                <f:facet name="options"> 
+                    <p:commandButton type="button" value="#{companySetting.getBranchCode()}: #{dBConnection.isMySQLConnectionAvailable()} | INTER-BRANCH : #{dBConnection.isINTER_BRANCH_MySQLConnectionAvailable()}" style="background-color:lightsalmon"/>  
+                </f:facet>  
+
+            </p:menubar>   
+
+        </h:form>  
+    </h:body>
+</html>
+

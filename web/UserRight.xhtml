@@ -1,0 +1,196 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>User Rights</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script  language="javascript">
+            function confirmDelete()
+            {
+                return confirm('Are you sure you want to delete this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+        </script> 
+    </h:head>
+    <f:event listener="#{navigationBean.checkAccessDenied('SETTING', 'View')}" type="preRenderView" />
+    <h:body>
+        <ui:include src="Menu.xhtml"/>
+        <h:form id="form" styleClass="clsMainFrom">
+
+            <h:panelGrid styleClass="clsGridMainHeader" columns="1">
+                <h:outputLabel styleClass="clsLabelTop" id="olblcategoryHeader" value="User Rights"/>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainInput" columns="2">
+                
+                <h:outputLabel styleClass="clsLabel" value="UserRight Id:"/>
+                <h:inputText styleClass="clsInput" id="itxtUserRightId" disabled="true" value="#{userRight.userRightId}">
+                </h:inputText>
+                
+                <h:outputLabel styleClass="clsLabel" value="Store Name:"/>
+                <h:selectOneMenu styleClass="clsMenu" id="menuStoreName" value="#{userRight.storeId}">
+                    <f:selectItem itemLabel="" itemValue="0"/>
+                    <f:selectItems value="#{storeBean.stores}" var="s" itemLabel="#{s.storeName}" itemValue="#{s.storeId}"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabel" value="Username:"/>
+                <h:selectOneMenu styleClass="clsMenu" id="menuUsername" value="#{userRight.userDetailId}">
+                    <f:selectItem itemLabel="" itemValue="0"/>
+                    <f:selectItems value="#{userDetailBean.userDetails}" var="u" itemLabel="#{u.userName} (#{u.firstName} #{u.secondName} #{u.thirdName})" itemValue="#{u.userDetailId}"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabel" value="Function Name:"/>
+                <h:selectOneMenu styleClass="clsMenu" id="menuFunctionName" value="#{userRight.functionName}">
+                    <f:selectItem itemLabel="" itemValue=""/>
+                    <f:selectItem itemLabel="ITEM" itemValue="ITEM"/>
+                    <f:selectItem itemLabel="RETAIL SALE" itemValue="RETAIL SALE"/>
+                    <f:selectItem itemLabel="WHOLE SALE" itemValue="WHOLE SALE"/>
+                    <f:selectItem itemLabel="PURCHASE" itemValue="PURCHASE"/>
+                    <f:selectItem itemLabel="PAYMENT" itemValue="PAYMENT"/>
+                    <f:selectItem itemLabel="REPORT" itemValue="REPORT"/>
+                    <f:selectItem itemLabel="SPEND POINT" itemValue="SPEND POINT"/>
+                    <f:selectItem itemLabel="SETTING" itemValue="SETTING"/>
+                </h:selectOneMenu>
+                
+                
+                <h:outputLabel styleClass="clsLabel" value="Allow VIEW ?"/>
+                <h:selectOneMenu styleClass="clsMenu" id="menuAllowView" value="#{userRight.allowView}">
+                    <f:selectItem itemLabel="" itemValue=""/>
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+                
+                 <h:outputLabel styleClass="clsLabel" value="Allow ADD ?"/>
+                 <h:selectOneMenu styleClass="clsMenu" id="menuAllowAdd" value="#{userRight.allowAdd}">
+                    <f:selectItem itemLabel="" itemValue=""/>
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+                 
+                  <h:outputLabel styleClass="clsLabel" value="Allow EDIT ?"/>
+                  <h:selectOneMenu styleClass="clsMenu" id="menuAllowEdit" value="#{userRight.allowEdit}">
+                    <f:selectItem itemLabel="" itemValue=""/>
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+                  
+                   <h:outputLabel styleClass="clsLabel" value="Allow DELETE ?"/>
+                   <h:selectOneMenu styleClass="clsMenu" id="menuAllowDelete" value="#{userRight.allowDelete}">
+                    <f:selectItem itemLabel="" itemValue=""/>
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainCommands" columns="2">
+            <h:panelGrid styleClass="clsGridMainCommands1" columns="4">
+                <h:commandButton styleClass="clsButton" id="cmdbSave" value="Save">
+                    <f:actionListener binding="#{userRightBean.saveUserRight(userRight)}" />
+                </h:commandButton>
+                <h:commandButton styleClass="clsButton" id="cmdbClear" value="Clear">
+                    <f:actionListener binding="#{userRightBean.clearUserRight(userRight)}" />
+                </h:commandButton>
+                <h:commandButton styleClass="clsButton" id="cmdbDelete" value="Delete" onclick="return confirmDelete();">
+                    <f:actionListener binding="#{userRightBean.deleteUserRight(userRight)}" />
+                </h:commandButton>
+            </h:panelGrid>
+            <h:panelGrid styleClass="clsGridMainCommands2" columns="4">
+            </h:panelGrid>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainMessages" columns="1">
+                <h:outputLabel styleClass="clsActionMessage" id="olblActionMessage" value="#{userRightBean.actionMessage}"/>
+                <h:messages id="msgsMainMessage" style="color: red"/><br/>
+            </h:panelGrid>
+            
+            <h:panelGrid styleClass="clsGridMainSearch" columns="1">
+                <h:outputLabel id="olblMainSearch" value="Search UserRight"/>
+                <h:outputLabel id="olblMainSearchDesc" value="(Search by: Username or StoreName or Any Name(First,Second,Third)!)"/>
+                <h:inputText id="itxtMainSearch" value="#{userRightBean.searchUserName}" autocomplete="off">
+                    <f:ajax event="keyup" render="dtblUserRight" listener="#{userRightBean.getUserRights()}"/>
+                </h:inputText>
+            </h:panelGrid>
+
+            <h:dataTable id="dtblUserRight" value="#{userRightBean.userRights}" var="ur" 
+                         styleClass="cls-table" 
+                         headerClass="cls-table-header" 
+                         rowClasses="cls-table-odd-row,cls-table-even-row" 
+                         columnClasses="cls-table-col1,cls-table-col2,cls-table-col3,cls-table-col4,cls-table-col5,cls-table-col6,cls-table-col7,cls-table-col8,cls-table-col9"
+                         > 
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Username</f:facet>
+                    <!-- row record -->
+                    #{ur.username}
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">UserNames</f:facet>
+                    <!-- row record -->
+                    #{ur.userNames}
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Store Name</f:facet>
+                    <!-- row record -->
+                    #{ur.storeName}
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Function Name</f:facet>
+                    <!-- row record -->
+                    #{ur.functionName}
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Allow VIEW</f:facet>
+                    <!-- row record -->
+                    #{ur.allowView}
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Allow ADD</f:facet>
+                    <!-- row record -->
+                    #{ur.allowAdd}
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Allow EDIT</f:facet>
+                    <!-- row record -->
+                    #{ur.allowEdit}
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Allow DELETE</f:facet>
+                    <!-- row record -->
+                    #{ur.allowDelete}
+                </h:column>
+                  
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Action</f:facet>
+                    <!-- row record -->
+                    <h:commandLink value="Edit" action="#{userRightBean.displayUserRight(ur,userRight)}" />
+                    &nbsp;
+                </h:column>
+                
+            </h:dataTable>
+
+        </h:form>
+    </h:body>
+</html>
+

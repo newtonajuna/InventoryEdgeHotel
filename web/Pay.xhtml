@@ -1,0 +1,292 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Payment</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script  language="javascript">
+            function confirmDelete()
+            {
+                return confirm('Are you sure you want to delete this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+            function confirmCancel()
+            {
+                return confirm('Are you sure you want to Cancel this payment record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+        </script> 
+    </h:head>
+    <f:event listener="#{navigationBean.checkAccessDenied('PAYMENT', 'View')}" type="preRenderView" />
+    <f:event listener="#{navigationBean.checkCurrentPage('PAYMENT','','')}" type="preRenderView" />
+    <f:event listener="#{payBean.initClearPay(pay,payBean.selectedBillTransactor)}" type="preRenderView" />
+    <h:body>
+        <ui:include src="Menu.xhtml"/>
+        <h:form id="formPay" styleClass="clsMainFrom" onkeypress="if (event.keyCode == 13)
+                    return false;">
+
+            <h:panelGrid styleClass="clsGridMainHeader" columns="3">
+                <h:outputLabel styleClass="clsLabelTop" id="olblPaymentHeader" value="PAYMENT - #{generalUserSetting.getCurrentPayCategory()}"/>
+                <h:outputLabel style="background-color:black;color:lightsalmon;" value="Payment From #{transactionTypeBean.getTransactionType(2).transactorLabel} against #{transactionTypeBean.getTransactionType(2).transactionOutputLabel}" rendered="#{generalUserSetting.getCurrentPayCategory().equals('IN')}"/>
+                <h:outputLabel style="background-color:black;color:lightsalmon;" value="#{transactionTypeBean.getTransactionType(2).transactorLabel}:Credit" rendered="#{generalUserSetting.getCurrentPayCategory().equals('IN')}"/>
+                <h:outputLabel style="background-color:black;color:lightsalmon;" value="Payment To #{transactionTypeBean.getTransactionType(1).transactorLabel} against #{transactionTypeBean.getTransactionType(1).transactionOutputLabel}" rendered="#{generalUserSetting.getCurrentPayCategory().equals('OUT')}"/>
+                <h:outputLabel style="background-color:black;color:lightsalmon;" value="#{transactionTypeBean.getTransactionType(1).transactorLabel} Ledger:Debt" rendered="#{generalUserSetting.getCurrentPayCategory().equals('OUT')}"/>
+            </h:panelGrid>
+            <h:panelGrid styleClass="clsGridMainInput" columns="2" style="background-color: chocolate;width: 100%;">
+
+                <h:panelGrid styleClass="clsGridMainInput" columns="2">
+                    <h:outputLabel styleClass="clsLabel" value="Search By:"/>
+                    <h:selectOneMenu styleClass="clsMenu" id="menuSearchBy" value="#{payBean.searchBy}">
+                        <f:selectItem itemValue="" itemLabel="...select..."/>
+                        <f:selectItem itemValue="Name" itemLabel="Name"/>
+                        <f:selectItem itemValue="InvoiceNo" itemLabel="InvoiceNo"/>
+                        <f:ajax event="change" listener="#{transactorBean.clearTransactor(payBean.selectedBillTransactor)}" render="pnlgSearch pnlTransType buttons dtblPay"/>
+                        <f:ajax event="change" listener="#{trans.setTransactionNumber2('')}" render="pnlgSearch pnlTransType buttons dtblPay"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+
+                <h:panelGrid styleClass="clsGridMainInput" columns="1" id="pnlgSearch">
+                    <h:panelGrid styleClass="clsGridMainInput" columns="2" rendered="#{payBean.searchBy.equals('Name')}">
+                        <h:outputLabel styleClass="clsLabel" value="#{transactionTypeBean.getTransactionType(2).transactorLabel}:" rendered="#{generalUserSetting.getCurrentPayCategory().equals('IN')}"/>
+                        <h:outputLabel styleClass="clsLabel" value="#{transactionTypeBean.getTransactionType(1).transactorLabel}:" rendered="#{generalUserSetting.getCurrentPayCategory().equals('OUT')}"/>
+                        <p:outputPanel>
+                            <p:autoComplete id="autcTransactor" value="#{payBean.selectedBillTransactor}" 
+                                            completeMethod="#{transactorBean.getTransactorObjectList}" 
+                                            var="trct" 
+                                            itemLabel="#{trct.transactorNames}" 
+                                            itemValue="#{trct}" 
+                                            converter="TransactorConverter" style="text-align: left" 
+                                            forceSelection="true" 
+                                            rendered="#{payBean.searchBy.equals('Name')}"
+                                            >
+                                <p:column headerText="Transactor Names" style="text-align: left" >  
+                                    #{trct.transactorNames} 
+                                </p:column> 
+                                <p:column headerText="Type" style="text-align: left" >  
+                                    #{trct.transactorType} 
+                                </p:column> 
+                                <p:column headerText="Contact Person" style="text-align: left">  
+                                    #{trct.cpName} 
+                                </p:column> 
+                                <p:ajax event="itemSelect" listener="#{pay.setBillTransactorId(payBean.selectedBillTransactor.transactorId)}" update="pnlTransType,buttons,dtblPay" />
+                                <p:ajax event="change" listener="#{pay.setBillTransactorId(payBean.selectedBillTransactor.transactorId)}" rendered="#{payBean.selectedBillTransactor!=null}" update="pnlTransType,buttons,dtblPay" />
+                            </p:autoComplete>    
+                            <p:commandButton id="newfolio" value="New Folio" process="@this" update=":guestfolioform" oncomplete="PF('GuestFolioDialog').show();">
+                            </p:commandButton>
+                        </p:outputPanel>
+                    </h:panelGrid>
+                    <h:panelGrid styleClass="clsGridMainInput" columns="2" rendered="#{payBean.searchBy.equals('InvoiceNo')}">
+                        <h:outputLabel styleClass="clsLabel" value="#{transactionTypeBean.getTransactionType(2).transactionNumberLabel}:" rendered="#{generalUserSetting.getCurrentPayCategory().equals('IN')}"/>
+                        <h:outputLabel styleClass="clsLabel" value="#{transactionTypeBean.getTransactionType(1).transactionNumberLabel}:" rendered="#{generalUserSetting.getCurrentPayCategory().equals('OUT')}"/>
+                        <h:inputText id="itxtTransactionNumber2" value="#{trans.transactionNumber2}" autocomplete="off" rendered="#{payBean.searchBy.equals('InvoiceNo')}">
+                            <f:ajax event="change" render="pnlTransType buttons dtblPay" />
+                        </h:inputText>
+                    </h:panelGrid>
+                </h:panelGrid>
+
+            </h:panelGrid>
+
+            <h:panelGrid>
+                <h:panelGrid id="pnlTransType" columns="1">
+                    <h:panelGrid id="pnlTransTypeMAuto" columns="2" style="text-align: right;">
+                        <h:outputLabel styleClass="clsLabel" value="#{transactionTypeBean.getTransactionType(2).transactionNumberLabel}:" rendered="#{generalUserSetting.getCurrentPayCategory().equals('IN')}"/>
+                        <h:outputLabel styleClass="clsLabel" value="#{transactionTypeBean.getTransactionType(1).transactionNumberLabel}:" rendered="#{generalUserSetting.getCurrentPayCategory().equals('OUT')}"/>
+                        <h:selectOneMenu styleClass="clsMenu" id="menuTransaction" value="#{pay.transactionId}">
+                            <f:selectItem itemValue="0" itemLabel=""/>
+                            <f:selectItems value="#{transBean.getTranssByBillTrPayCatTransNo(trans.transactionNumber2,payBean.selectedBillTransactor.transactorId,generalUserSetting.getCurrentPayCategory())}" var="trn" itemLabel="No:#{trn.transactionNumber} Ref:#{trn.transactionRef} Amount:#{trn.grandTotal}" itemValue="#{trn.transactionId}"/>
+                            <f:ajax event="change" render="pnlTransTypeManual"/>
+                        </h:selectOneMenu>
+                    </h:panelGrid>
+                    <h:panelGrid id="pnlTransTypeManual" columns="2" style="text-align: right;">
+                        <h:outputLabel styleClass="clsLabel" value="Trans.Type:" rendered="#{transBean.transactorTranss.size()==0}"/>
+                        <h:selectOneMenu styleClass="clsMenu" id="menuTransactionType" value="#{pay.transactionTypeId}" rendered="#{transBean.transactorTranss.size()==0}">
+                            <f:selectItem itemValue="0" itemLabel=""/>
+                            <f:selectItem itemValue="2" itemLabel="SALE INVOICE" itemDisabled="#{generalUserSetting.getCurrentPayCategory().equals('OUT')}"/>
+                            <f:selectItem itemValue="1" itemLabel="PURCHASE INVOICE" itemDisabled="#{generalUserSetting.getCurrentPayCategory().equals('IN')}"/>
+                            <f:ajax event="change" render="menuTransactionType menuTransactionReason"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel styleClass="clsLabel" value="Trans.Reason:" rendered="#{transBean.transactorTranss.size()==0}"/>
+                        <h:selectOneMenu styleClass="clsMenu" id="menuTransactionReason" value="#{pay.transactionReasonId}" rendered="#{transBean.transactorTranss.size()==0}">
+                            <f:selectItem itemLabel="" itemValue="0"/>
+                            <f:selectItems value="#{transactionReasonBean.getTransactionReasons(pay.transactionTypeId)}" var="tr" itemLabel="#{tr.transactionReasonName}" itemValue="#{tr.transactionReasonId}"/>
+                        </h:selectOneMenu>
+                    </h:panelGrid>
+                </h:panelGrid>
+
+                <h:panelGrid styleClass="clsGridMainInput" columns="2">
+                    <h:outputLabel styleClass="clsLabel" style="width: 250px;" value="Payment Date:"/>
+                    <p:calendar styleClass="clsInput" style="width: 250px;" id="calPaymentDate" pattern="dd-MM-yyyy" navigator="true" showButtonPanel="true" readonlyInput="true" value="#{pay.payDate}">
+                    </p:calendar>
+
+                    <h:outputLabel styleClass="clsLabel" style="width: 250px;" value="Payment Method:" for="menuPayMethod"/>
+                    <h:selectOneMenu styleClass="clsMenu" style="width: 250px;" id="menuPayMethod" value="#{pay.payMethodId}" required="true">
+                        <f:selectItems value="#{payMethodBean.payMethods}" var="pm" itemLabel="#{pm.payMethodName}" itemValue="#{pm.payMethodId}"/>
+                        <f:ajax listener="#{payBean.compute_surcharge_total_amount(pay.payMethodId, pay)}" execute="@this" render="itxtSurcharge itxtTotalAmount"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel styleClass="clsLabel" style="width: 250px;" value="Payment Ref No:"/>
+                    <h:inputText id="itxtPayRefNo" style="width: 250px;" value="#{pay.payRefNo}" styleClass="clsInputTransItem"/>
+                    <h:outputLabel styleClass="clsLabel" value="Currency Type:"/>
+                    <h:selectOneMenu styleClass="clsMenu" value="#{pay.currencyTypeId}">
+                        <f:selectItems value="#{currencyTypeBean.currencyTypes}" var="ct" itemLabel="#{ct.currencyTypeName}" itemValue="#{ct.currencyTypeId}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel styleClass="clsLabel" style="width: 250px;" value="Paid Amount:"/>
+                    <h:inputText id="itxtPaidAmount" style="width: 250px;" value="#{pay.paidAmount}" styleClass="clsInputTransItem" autocomplete="off">
+                        <f:ajax listener="#{payBean.compute_surcharge_total_amount(pay.payMethodId, pay)}" execute="@this" render="itxtSurcharge itxtTotalAmount"/>
+                    </h:inputText>
+                    <h:outputLabel styleClass="clsLabel" style="width: 250px;" value="Surchage:"/>
+                    <h:inputText id="itxtSurcharge" style="width: 250px;" value="#{pay.surcharge}" styleClass="clsInputTransItem" autocomplete="off" disabled="true">
+                    </h:inputText>
+                    <h:outputLabel styleClass="clsLabel" style="width: 250px;" value="Total Amount:"/>
+                    <h:inputText id="itxtTotalAmount" style="width: 250px;" value="#{pay.total_amount}" styleClass="clsInputTransItem" autocomplete="off" disabled="true">
+                    </h:inputText>
+                    <h:outputLabel styleClass="clsLabel" style="width: 250px;" value="Points Amount Spent:"/>
+                    <h:inputText id="itxtSpendPointsAmount" style="width: 250px;" value="#{pay.pointsSpentAmount}" styleClass="clsInputTransItem" disabled="true">
+                        <f:convertNumber pattern="###,###.##"/>
+                    </h:inputText>
+                </h:panelGrid>
+            </h:panelGrid>
+            <h:panelGrid id="buttons" styleClass="clsGridMainCommands" columns="1">
+                <h:panelGrid styleClass="clsGridMainCommands1" columns="4">
+                    <h:commandButton styleClass="clsButtonBig" value="SAVE (ALT+S)" accesskey="s" rendered="#{payBean.selectedBillTransactor!=null}">
+                        <f:ajax listener="#{payBean.savePay(pay)}" execute="@form" render="@form"/>
+                    </h:commandButton>
+                    <h:commandButton styleClass="clsButtonBig" value="CLEAR (ALT+C)" accesskey="c">
+                        <f:ajax listener="#{payBean.clearPay(pay)}" execute="@form" render="@form"/>
+                    </h:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainMessages" columns="1">
+                <h:outputLabel styleClass="clsActionMessage" id="olblActionMessage" value="#{payBean.actionMessage}"/>
+                <h:messages id="msgsMainMessage" style="color: red"/><br/>
+            </h:panelGrid>
+
+            <p:dataTable id="dtblPay" value="#{payBean.getPaysByBillTrPaCaTransNo(trans.transactionNumber2,payBean.selectedBillTransactor.transactorId,generalUserSetting.getCurrentPayCategory())}" var="p" 
+                         tableStyle="width:auto;"> 
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Bill #{transactionTypeBean.getTransactionType(payBean.getTransTypeIdByPayCat(generalUserSetting.getCurrentPayCategory())).transactorLabel}</f:facet>
+                    <!-- row record -->
+                    #{transactorBean.getTransactor(p.billTransactorId).transactorNames}
+                </p:column>
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">#{transactionTypeBean.getTransactionType(payBean.getTransTypeIdByPayCat(generalUserSetting.getCurrentPayCategory())).transactorLabel}</f:facet>
+                    <!-- row record -->
+                    #{transactorBean.getTransactor(transBean.getTrans(p.transactionId).transactorId).transactorNames}
+                </p:column>
+
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Invoice No</f:facet>
+                    <!-- row record -->
+                    #{transactionTypeBean.getTransactionType(payBean.getTransTypeIdByPayCat(generalUserSetting.getCurrentPayCategory())).transactionNumberLabel}:#{transBean.getTrans(p.transactionId).transactionNumber}
+                </p:column>
+
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Ref No</f:facet>
+                    <!-- row record -->
+                    #{transBean.getTrans(p.transactionId).transactionRef}
+                </p:column>
+
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Invoice Amount</f:facet>
+                    <!-- row record -->
+                    <h:outputLabel value="#{transBean.getTrans(p.transactionId).grandTotal}">
+                        <f:convertNumber pattern="###,###,###"/>
+                    </h:outputLabel>
+                </p:column>
+
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Pay ID</f:facet>
+                    <!-- row record -->
+                    #{p.payId}
+                </p:column>
+
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Add Date</f:facet>
+                    <!-- row record -->
+                    <h:outputLabel value="#{p.addDate}">
+                        <f:convertDateTime pattern="#{companySetting.getDateFormat()} H:mm" timeZone="#{companySetting.getTimeZone()}"/>
+                    </h:outputLabel>
+                </p:column>
+
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Pay Method</f:facet>
+                    <!-- row record -->
+                    #{payMethodBean.getPayMethod(p.payMethodId).getPayMethodName()}
+                </p:column>
+
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Paid Amount</f:facet>
+                    <!-- row record -->
+                    <h:outputLabel value="#{p.paidAmount}" style="color: blue">
+                        <f:convertNumber pattern="###,###,###"/>
+                    </h:outputLabel>
+                </p:column>
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Currency</f:facet>
+                    <!-- row record -->
+                    <h:outputLabel value="#{p.currencyTypeName}" style="color: blue">
+                    </h:outputLabel>
+                </p:column>
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Exchange Rate</f:facet>
+                    <!-- row record -->
+                    <h:outputLabel value="#{p.exchangeRate}" style="color: blue">
+                        <f:convertNumber pattern="###,###,###"/>
+                    </h:outputLabel>
+                </p:column>
+
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Points Spent Amount</f:facet>
+                    <!-- row record -->
+                    <h:outputLabel value="#{p.pointsSpentAmount}" style="color: blue">
+                        <f:convertNumber pattern="###,###,###"/>
+                    </h:outputLabel>
+                </p:column>
+
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Action</f:facet>
+                    <!-- row record -->
+                    <h:commandButton styleClass="clsButton" id="cmdbDelete" value="Cancel" onclick="return confirmCancel();" rendered="#{payBean.isAllowCancelPay(p)}">
+                        <f:ajax listener="#{payBean.cancelPay(p)}" execute="dtblPay" render="@form" />
+                    </h:commandButton>
+                    <h:outputLabel value=" "/>
+                    <h:commandButton styleClass="clsButton" value="Receipt" rendered="#{generalUserSetting.getCurrentPayCategory()=='IN'}">
+                        <f:ajax listener="#{payBean.ViewReceiptVoucher(p.payId)}"/>
+                    </h:commandButton>
+                    <h:commandButton styleClass="clsButton" value="Voucher" rendered="#{generalUserSetting.getCurrentPayCategory()=='OUT'}">
+                        <f:ajax listener="#{payBean.ViewReceiptVoucher(p.payId)}"/>
+                    </h:commandButton>
+                </p:column>
+
+            </p:dataTable>
+            <!-- RECEIPT/VOUCHER STARTS HERE -->
+            <ui:include id="uiPayReceipt" src="PayReceipt.xhtml"/>
+            <!-- RECEIPT/VOUCHER ENDS HERE -->
+        </h:form>
+        <ui:include src="guestfoliodialog.xhtml"/>
+    </h:body>
+</html>
+

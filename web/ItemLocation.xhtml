@@ -1,0 +1,131 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Item Location</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script  language="javascript">
+            function confirmDelete()
+            {
+                return confirm('Are you sure you want to delete this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+        </script> 
+    </h:head>
+    <f:event listener="#{navigationBean.checkAccessDenied('ITEM', 'View')}" type="preRenderView" />
+    <h:body>
+        <ui:include src="Menu.xhtml"/>
+        <h:form id="form" styleClass="clsMainFrom" onkeypress="if (event.keyCode == 13) return false;">
+
+            <h:panelGrid styleClass="clsGridMainHeader" columns="1">
+                <h:outputLabel styleClass="clsLabelTop" id="olblItemLocationHeader" value="Item Location(s)"/>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainInput" columns="4">
+                 <h:outputLabel styleClass="clsLabel" value="Store:"/>
+                <p:selectOneMenu styleClass="clsMenu" id="menuStore" value="#{location.storeId}">
+                    <f:selectItem itemLabel="" itemValue="0"/>
+                    <f:selectItems value="#{storeBean.stores}" var="s" itemLabel="#{s.storeName}" itemValue="#{s.storeId}"/>
+                    <f:ajax event="change" render="menuLocation dtblItemLocation"/>
+                </p:selectOneMenu>
+                 
+                <h:outputLabel styleClass="clsLabel" value="Location:"/>
+                <p:selectOneMenu styleClass="clsMenu" id="menuLocation" value="#{itemLocation.locationId}" filter="true" filterMatchMode="contains">
+                    <f:selectItem itemLabel="" itemValue="0"/>
+                    <f:selectItems value="#{locationBean.getLocations(location.storeId)}" var="l" itemLabel="#{l.locationName}" itemValue="#{l.locationId}"/>
+                    <f:ajax event="change" render="dtblItemLocation"/>
+                </p:selectOneMenu>
+                 
+                <h:outputLabel styleClass="clsLabel" value="Item:"/>
+                <p:autoComplete id="autcItem" widgetVar="WautcItem" value="#{itemBean.selectedItem}"  
+                                 completeMethod="#{itemBean.getItemObjectList}" 
+                                var="itm" 
+                                itemLabel="#{itm.description}" 
+                                itemValue="#{itm}" 
+                                converter="ItemConverter" style="text-align: left" 
+                                forceSelection="true" queryDelay="0" 
+                                onkeyup="if (event.keyCode == 13) return false;">
+                    <p:column headerText="Item Description" style="text-align: left" >  
+                    #{itm.description} 
+                    </p:column> 
+                    <p:column headerText="Unit" style="text-align: left">  
+                    #{unitBean.getUnit(itm.unitId).unitSymbol}
+                    </p:column> 
+                    <p:column headerText="Category" style="text-align: left">  
+                    #{categoryBean.getCategory(itm.categoryId).categoryName}
+                    </p:column>
+                    <p:column headerText="Unit Retailsale Price" style="text-align: left">  
+                        <h:outputText value="#{itm.unitRetailsalePrice}">
+                            <f:convertNumber pattern="###,###.##"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Unit Wholesale Price" style="text-align: left">
+                        <h:outputText value="#{itm.unitWholesalePrice}">
+                            <f:convertNumber pattern="###,###.##"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:ajax event="itemSelect" listener="#{itemLocation.setItemId(itemBean.selectedItem.itemId)}" update="dtblItemLocation"/>
+                    <p:ajax event="change" listener="#{itemLocation.setItemId(itemBean.selectedItem.itemId)}" rendered="#{itemBean.selectedItem!=null}" update="dtblItemLocation"/>
+                </p:autoComplete>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainCommands" columns="1">
+                <h:commandButton id="cmdbAdd" value="Add Item to Location">
+                    <f:actionListener binding="#{itemLocationBean.saveItemLocation(itemLocation)}" />
+                    <f:actionListener binding="#{itemLocationBean.clearItemLocation(itemLocation)}" rendered="dtblItemLocation" />
+                </h:commandButton>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainMessages" columns="1">
+                <h:outputLabel styleClass="clsActionMessage" id="olblActionMessage" value="#{itemLocationBean.actionMessage}"/>
+                <h:messages id="msgsMainMessage" style="color: red"/><br/>
+            </h:panelGrid>
+
+            <h:dataTable id="dtblItemLocation" value="#{itemLocationBean.getItemLocations(location,itemLocation)}" var="il" 
+                         styleClass="cls-table" 
+                         headerClass="cls-table-header" 
+                         rowClasses="cls-table-odd-row,cls-table-even-row" 
+                         columnClasses="cls-table-col1,cls-table-col2,cls-table-col3"
+                         > 
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Store</f:facet>
+                    <!-- row record -->
+                    #{il.storeName}
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Location</f:facet>
+                    <!-- row record -->
+                    #{il.locationName}
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Item</f:facet>
+                    <!-- row record -->
+                    #{il.description}
+                </h:column>
+
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Action</f:facet>
+                    <!-- row record -->
+                    <h:commandLink value="Remove Item from Location" action="#{itemLocationBean.deleteItemLocationByObject(il)}" />
+                    &nbsp;
+                </h:column>
+                
+            </h:dataTable>
+
+        </h:form>
+    </h:body>
+</html>
+

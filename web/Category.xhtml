@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Category</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script  language="javascript">
+            function confirmDelete()
+            {
+                return confirm('Are you sure you want to delete this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+        </script> 
+    </h:head>
+    <f:event listener="#{navigationBean.checkAccessDenied('ITEM', 'View')}" type="preRenderView" />
+    <h:body>
+        <ui:include src="Menu.xhtml"/>
+        <h:form id="form" styleClass="clsMainFrom">
+
+            <h:panelGrid styleClass="clsGridMainHeader" columns="1">
+                <h:outputLabel styleClass="clsLabelTop" id="olblcategoryHeader" value="Item - Category"/>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainInput" columns="2">
+                <h:outputLabel styleClass="clsLabel" value="Category Name:"/>
+                <h:inputText styleClass="clsInput" id="itxtCategoryName" value="#{category.categoryName}" autocomplete="off">
+                </h:inputText>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainCommands" columns="2">
+            <h:panelGrid styleClass="clsGridMainCommands1" columns="4">
+                <h:commandButton styleClass="clsButton" id="cmdbSave" value="Save">
+                    <f:ajax listener="#{categoryBean.saveCategory(category)}" execute="@form" render="@form" />
+                </h:commandButton>
+                <h:commandButton styleClass="clsButton" id="cmdbClear" value="Clear">
+                    <f:ajax listener="#{categoryBean.clearCategory(category)}" execute="@form" render="@form" />
+                </h:commandButton>
+                <h:commandButton styleClass="clsButton" id="cmdbDelete" value="Delete" onclick="return confirmDelete();">
+                    <f:ajax listener="#{categoryBean.deleteCategoryByObject(category)}" execute="@form" render="@form" />
+                </h:commandButton>
+            </h:panelGrid>
+            <h:panelGrid styleClass="clsGridMainCommands2" columns="4">
+            </h:panelGrid>
+
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainMessages" columns="1">
+                <h:outputLabel styleClass="clsActionMessage" id="olblActionMessage" value="#{categoryBean.actionMessage}"/>
+                <h:messages id="msgsMainMessage" style="color: red"/><br/>
+            </h:panelGrid>
+            
+            <h:panelGrid styleClass="clsGridMainSearch" columns="1">
+                <h:outputLabel id="olblMainSearch" value="Search Category"/>
+                <h:inputText id="itxtMainSearch" value="#{categoryBean.searchCategoryName}" autocomplete="off">
+                    <f:ajax event="keyup" render="dtblCategory" />
+                </h:inputText>
+            </h:panelGrid>
+
+            <h:dataTable id="dtblCategory" value="#{categoryBean.getCategoriesByCategoryName(categoryBean.searchCategoryName)}" var="c" 
+                         styleClass="cls-table" 
+                         headerClass="cls-table-header" 
+                         rowClasses="cls-table-odd-row,cls-table-even-row" 
+                         columnClasses="cls-table-col1,cls-table-col2"
+                         > 
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Category Name</f:facet>
+                    <!-- row record -->
+                    #{c.categoryName}
+                </h:column>
+
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Action</f:facet>
+                    <!-- row record -->
+                    <h:commandLink value="Edit">
+                        <f:ajax listener="#{categoryBean.displayCategory(c,category)}" execute="@form" render="@form"/>
+                    </h:commandLink>
+                    &nbsp;
+                </h:column>
+                
+            </h:dataTable>
+
+        </h:form>
+    </h:body>
+</html>
+

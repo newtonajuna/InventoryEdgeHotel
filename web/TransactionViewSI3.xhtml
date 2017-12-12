@@ -1,0 +1,200 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Sales Invoice</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+    </h:head>
+    <h:body>
+        <h:form>
+            <ui:composition>
+                <p:commandButton id="cmdbvPrint" styleClass="clsButtonBigLonger" value="Print Sales Invoice Below (ALT+P)" icon="ui-icon-print" type="button" accesskey="p">
+                    <p:printer target="IpgrdvOuterSalesInvoice" rendered="false"/>
+                </p:commandButton>
+                <h:panelGrid id="IpgrdvOuterSalesInvoice">
+                    <h:panelGrid id="IpgrdSalesInvoice" columns="1">
+
+                        <h:panelGrid id="IpgrdSalesInvoiceHeader1" style="width: 290px;text-align: center;border-bottom-style: dotted;" columns="1">
+                            <h:outputLabel id="IolblSalesInvoiceCompany" style="font-size: 20px;font-weight: bold;" value="#{companySetting.getLICENSE_CLIENT_NAME()}"/>
+                            <p:panel style="width: 290px;text-align: center; border-style: none !important;">
+                                <h:outputLabel id="IolblSalesInvoiceBranch" value="#{companySetting.getBranchCode()} " rendered="#{generalSetting.isTwoStringsEqual(companySetting.getShowBranchInvoice(),'Yes')}"/>
+                                <h:outputLabel id="IolblSalesInvoiceStore" value="#{storeBean.getStore(salesInvoiceBean.getCurrentTransaction().storeId).storeName}" rendered="#{generalSetting.isTwoStringsEqual(companySetting.getShowStoreInvoice(),'Yes')}"/>
+                            </p:panel>
+                        </h:panelGrid>
+
+                        <h:panelGrid id="IpgrdSalesInvoiceHeader2" style="width: 290px; margin: 0px;" columns="2">
+                            <p:graphicImage id="IgimgSalesInvoiceLogo" value="#{companySetting.getLogoUrl()}" style="width:150px;float: left;" rendered="#{generalSetting.isTwoStringsEqual(companySetting.getShowLogoInvoice(),'Yes')}" />
+                            <h:outputLabel id="IolblSalesInvoiceAddress" style="" value="#{companySetting.getPhysicalAddress()}"/>
+                        </h:panelGrid>
+                        <h:panelGrid id="IpgrdSalesInvoiceHeader3" style="width: 290px; margin: 0px;" columns="1">
+                            <h:outputLabel id="IolblSalesInvoiceTel" value="Tel:#{companySetting.getPhone()}"/>
+                            <h:outputLabel id="IolblSalesInvoiceTIN" value="TIN:#{companySetting.getTaxIdentity()}"/>
+                        </h:panelGrid>
+
+                        <h:panelGrid id="IpgrdSalesInvoiceHeader34" style="width: 290px; margin: 0px;border-bottom-style: dotted;" columns="1">
+                            <h:outputLabel id="IolblSalesInvoiceWebsite" value="Website: #{companySetting.getWebsite()}" rendered="#{companySetting.getWebsite().length()>0}"/>
+                            <h:outputLabel id="IolblSalesInvoiceEmail" value="Email: #{companySetting.getEmail()}" rendered="#{companySetting.getEmail().length()>0}"/>
+                        </h:panelGrid>
+
+                        <h:panelGrid id="IpgrdSalesInvoiceHeader4" style="width: 290px; margin: 0px;" columns="2">
+                            <h:outputLabel style="font-size: 12px;" value="#{transactionTypeBean.getTransactionType(2).transactionNumberLabel}:"/>
+                            <h:outputLabel id="IolblSalesInvoiceNo" style="font-size: 20px;font-weight: bold;" value="#{salesInvoiceBean.getCurrentTransaction().transactionNumber}"/>
+                            <h:outputLabel style="font-size: 12px;" value="#{transactionTypeBean.getTransactionType(2).transactionDateLabel}:"/>
+                            <h:outputLabel id="IolblSalesInvoiceDate" style="font-size: 12px;" value="#{salesInvoiceBean.getCurrentTransaction().addDate}">
+                                <f:convertDateTime pattern="#{companySetting.getDateFormat()} H:mm" timeZone="#{companySetting.getTimeZone()}"/>
+                            </h:outputLabel>
+                        </h:panelGrid>
+
+                        <h:panelGrid id="IpgrdSalesInvoiceHeader5" style="width: 290px; margin: 0px;" columns="2">
+                            <h:outputLabel style="font-size: 12px;" value="#{transactionTypeBean.getTransactionType(2).transactionRefLabel}:"/>
+                            <h:outputLabel style="font-size: 14px;font-weight: bold;" value="#{salesInvoiceBean.getCurrentTransaction().transactionRef}"/>
+                            <h:outputLabel style="font-size: 12px;" value="#{transactionTypeBean.getTransactionType(2).transactorLabel}:"/>
+                            <h:outputLabel id="IolblSalesInvoiceCustomer" style="font-size: 12px;" value="#{salesInvoiceBean.getCurrentTransactor().transactorNames}"/>
+                            <h:outputLabel style="font-size: 12px;" value="#{transactionTypeBean.getTransactionType(2).billTransactorLabel}:" rendered="#{salesInvoiceBean.getCurrentBillTransactor().transactorId!=salesInvoiceBean.getCurrentTransactor().transactorId}"/>
+                            <h:outputLabel id="IolblSalesInvoiceBillCustomer" style="font-size: 12px;" value="#{salesInvoiceBean.getCurrentBillTransactor().transactorNames}" rendered="#{salesInvoiceBean.getCurrentBillTransactor().transactorId!=salesInvoiceBean.getCurrentTransactor().transactorId}"/>
+                        </h:panelGrid>
+
+                        <h:panelGrid id="IpgrdSalesInvoiceItems">
+                            <h:dataTable id="IdtblSalesInvoiceItems" value="#{salesInvoiceBean.currentTransactionItems}" var="ti" 
+                                         styleClass="cls-table-SalesInvoice-very-small" 
+                                         headerClass="cls-table-header-SalesInvoice" 
+                                         rowClasses="cls-table-odd-row-SalesInvoice,cls-table-even-row-SalesInvoice" 
+                                         columnClasses="cls-table-col1-SalesInvoice,cls-table-col2-SalesInvoice,cls-table-col3-SalesInvoice"
+                                         > 
+                                <h:column>
+                                    <!-- column header -->
+                                    <f:facet name="header">ITEM</f:facet>
+                                    <!-- row record -->
+                                    <h:outputLabel style="font-size: 12px;" value="#{itemBean.getItem(ti.itemId).description} [#{salesInvoiceBean.getVatRatedCode(ti.vatRated)}]" />
+                                </h:column>
+                                <h:column>
+                                    <!-- column header -->
+                                    <f:facet name="header">QTY</f:facet>
+                                    <!-- row record -->
+                                    <h:outputLabel value="#{ti.itemQty}">
+                                        <f:convertNumber pattern="###,###.##"/>
+                                    </h:outputLabel>#{unitBean.getUnit(itemBean.getItem(ti.itemId).unitId).unitSymbol} @ 
+                                    <h:outputLabel style="font-size: 12px;" value="#{ti.unitPriceIncVat}">
+                                        <f:convertNumber pattern="###,###.##"/>
+                                    </h:outputLabel>
+                                </h:column>
+                                <h:column>
+                                    <!-- column header -->
+                                    <f:facet name="header">AMOUNT</f:facet>
+                                    <!-- row record -->
+                                    <h:outputLabel style="font-size: 12px;" value="#{ti.amountIncVat}">
+                                        <f:convertNumber pattern="###,###.##"/>
+                                    </h:outputLabel>
+                                </h:column>
+                            </h:dataTable>
+                        </h:panelGrid>
+
+                        <h:panelGrid id="IpgrdSalesInvoiceTotals" style="width: 290px; margin: 0px;border-bottom-style: dotted" columns="2">               
+                            <h:outputLabel style="font-size: 16px;" value="SubTotal:"/>
+                            <h:outputLabel style="font-size: 16px;" id="IolblSalesInvoiceSubTotal" value="#{salesInvoiceBean.getCurrentTransaction().subTotal}">
+                                <f:convertNumber pattern="###,###.##"/>
+                            </h:outputLabel>
+                            <h:outputLabel style="font-size: 16px;" value="Trade Discount:"/>
+                            <h:outputLabel style="font-size: 16px;" id="IolblSalesInvoiceTotalTradeDiscount" value="#{salesInvoiceBean.getCurrentTransaction().totalTradeDiscount}">
+                                <f:convertNumber pattern="###,###.##"/>
+                            </h:outputLabel>
+                            <h:outputLabel style="font-size: 16px;" value="Total VAT:"/>
+                            <h:outputLabel style="font-size: 16px;" id="IolblSalesInvoiceTotalVat" value="#{salesInvoiceBean.getCurrentTransaction().totalVat}">
+                                <f:convertNumber pattern="###,###.##"/>
+                            </h:outputLabel>
+                            <h:outputLabel style="font-size: 16px;" value="Cash Discount:"/>
+                            <h:outputLabel style="font-size: 16px;" id="IolblSalesInvoiceCashDiscount" value="#{salesInvoiceBean.getCurrentTransaction().cashDiscount}">
+                                <f:convertNumber pattern="###,###.##"/>
+                            </h:outputLabel>
+                            <h:outputLabel style="font-size: 16px; font-weight: bold;" value="GRAND TOTAL:"/>
+                            <h:outputLabel style="font-size: 16px; font-weight: bold;" id="IolblSalesInvoiceGrandTotal" value="#{salesInvoiceBean.getCurrentTransaction().grandTotal}">
+                                <f:convertNumber pattern="###,###.##"/>
+                            </h:outputLabel>
+                            <h:outputLabel style="font-size: 16px;" value="Points Spent Amt:"/>
+                            <h:outputLabel id="IolblSalesInvoicePointsAmountSpent" value="#{salesInvoiceBean.getCurrentPay().pointsSpentAmount}">
+                                <f:convertNumber pattern="###,###.##"/>
+                            </h:outputLabel>
+                            <h:outputLabel style="font-size: 16px; font-weight: bold;" value="TENDERED AMT:"/>
+                            <h:outputLabel style="font-size: 16px; font-weight: bold;" id="IolblSalesInvoiceAmountTendered" value="#{salesInvoiceBean.getCurrentTransaction().amountTendered}">
+                                <f:convertNumber pattern="###,###.##"/>
+                            </h:outputLabel>
+                            <h:outputLabel style="font-size: 16px; font-weight: bold;" value="CHANGE AMT:"/>
+                            <h:outputLabel style="font-size: 16px; font-weight: bold;" id="IolblSalesInvoiceChangeAmount" value="#{salesInvoiceBean.getCurrentTransaction().changeAmount}">
+                                <f:convertNumber pattern="###,###.##"/>
+                            </h:outputLabel>
+                        </h:panelGrid>
+
+                        <h:panelGrid id="IpgrdSalesInvoiceVAT">
+                            <h:panelGrid rendered="#{companySetting.EShowVatAnalysisInvoice.equals('Yes')}" style="width: 290px; margin: 0px;border-bottom-style: dotted" columns="3">
+                                <h:outputLabel style="font-size: 14px;" value="VAT Rate(%)"/>
+                                <h:outputLabel style="font-size: 14px;" value="Vatable Amt"/>
+                                <h:outputLabel style="font-size: 14px;" value="VAT"/>
+
+                                <h:outputLabel style="font-size: 14px;" value="#{salesInvoiceBean.getCurrentTransaction().vatPerc}">
+                                    <f:convertNumber pattern="Std ###,###.##"/>
+                                </h:outputLabel>
+                                <h:outputLabel style="font-size: 14px;" value="#{salesInvoiceBean.getCurrentTransaction().totalStdVatableAmount}">
+                                    <f:convertNumber pattern="###,###.##"/>
+                                </h:outputLabel>
+                                <h:outputLabel style="font-size: 14px;" value="#{salesInvoiceBean.getCurrentTransaction().totalVat}">
+                                    <f:convertNumber pattern="###,###.##"/>
+                                </h:outputLabel>
+
+                                <h:outputLabel style="font-size: 14px;" value="Zero 0"/>
+                                <h:outputLabel style="font-size: 14px;" value="#{salesInvoiceBean.getCurrentTransaction().totalZeroVatableAmount}">
+                                    <f:convertNumber pattern="###,###.##"/>
+                                </h:outputLabel>
+                                <h:outputLabel style="font-size: 14px;" value="0"/>
+
+                                <h:outputLabel style="font-size: 14px;" value="Exempt n/a"/>
+                                <h:outputLabel style="font-size: 14px;" value="#{salesInvoiceBean.getCurrentTransaction().totalExemptVatableAmount}">
+                                    <f:convertNumber pattern="###,###.##"/>
+                                </h:outputLabel>
+                                <h:outputLabel style="font-size: 14px;" value="0"/>
+                            </h:panelGrid>
+                        </h:panelGrid>
+
+                        <h:panelGrid id="IpgrdSalesInvoicePointsCard">
+                            <h:panelGrid style="width: 290px; margin: 0px;border-bottom-style: dotted" columns="2" rendered="#{salesInvoiceBean.getCurrentPointscard().cardNumber.length()>0}">
+                                <h:outputLabel style="font-size: 12px;" value="Card Number:"/>
+                                <h:outputLabel style="font-size: 12px;" id="IolblSalesInvoiceCardNo" value="#{salesInvoiceBean.getCurrentPointscard().cardNumber}"/>
+                                <h:outputLabel style="font-size: 12px;" value="Card Holder:"/>
+                                <h:outputLabel style="font-size: 12px;" id="IolblSalesInvoiceCardHolder" value="#{salesInvoiceBean.getCurrentPointscard().cardHolder}"/>
+                                <h:outputLabel style="font-size: 12px;" value="Points Spent:"/>
+                                <h:outputLabel style="font-size: 12px;" id="IolblSalesInvoicePointsSpent" value="#{salesInvoiceBean.getCurrentPay().pointsSpent}">
+                                    <f:convertNumber pattern="###,###.##"/>
+                                </h:outputLabel>
+                                <h:outputLabel style="font-size: 12px;" value="Points Awarded :"/>
+                                <h:outputLabel style="font-size: 12px;" id="IolblSalesInvoicePointsAwarded" value="#{salesInvoiceBean.getCurrentTransaction().pointsAwarded}">
+                                    <f:convertNumber pattern="###,###.##"/>
+                                </h:outputLabel>
+                                <h:outputLabel style="font-size: 12px;" value="Points Balance :"/>
+                                <h:outputLabel style="font-size: 12px;" id="IolblSalesInvoicePointsBalance" value="#{salesInvoiceBean.getCurrentPointscard().pointsBalance}">
+                                    <f:convertNumber pattern="###,###.##"/>
+                                </h:outputLabel>
+                            </h:panelGrid>
+                        </h:panelGrid>
+
+                        <h:panelGrid id="IpgrdSalesInvoiceFooter1" style="width: 290px; margin: 0px;border-bottom-style: dotted" columns="2">
+                            <h:outputLabel value="#{transactionTypeBean.getTransactionType(2).transactionUserLabel}: "/>
+                            <h:outputLabel value="#{salesInvoiceBean.getCurrentTransUserDetail().firstName} #{salesInvoiceBean.getCurrentTransUserDetail().secondName}"/>
+                            <h:outputLabel value="Added By: " rendered="#{salesInvoiceBean.getCurrentUserDetail().userDetailId!=salesInvoiceBean.getCurrentTransUserDetail().userDetailId}"/>
+                            <h:outputLabel value="#{salesInvoiceBean.getCurrentUserDetail().firstName} #{salesInvoiceBean.getCurrentUserDetail().secondName}" rendered="#{salesInvoiceBean.getCurrentUserDetail().userDetailId!=salesInvoiceBean.getCurrentTransUserDetail().userDetailId}"/>
+                        </h:panelGrid>
+
+                        <h:panelGrid id="IpgrdSalesInvoiceFooter2" style="width: 290px; margin: 0px;border-bottom-style: dotted" columns="1" rendered="#{generalSetting.isTwoStringsEqual(companySetting.getIsShowDeveloper(),'Yes')}">
+                            <h:outputLabel style="font-size: 10px;" value="System developed by WINGERsoft Technologies Ltd"/>
+                            <h:outputLabel style="font-size: 10px;" value="#{companySetting.getDeveloperEmail()} | #{companySetting.getDeveloperPhone()}"/>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                </h:panelGrid>
+            </ui:composition>
+        </h:form>
+    </h:body>
+</html>
+

@@ -1,0 +1,266 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Item</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script  type="text/javascript">
+            function confirmDelete()
+            {
+                return confirm('Are you sure you want to delete this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+        </script> 
+    </h:head>
+    <f:event listener="#{navigationBean.checkAccessDenied('ITEM', 'View')}" type="preRenderView" />
+    <f:event listener="#{itemBean.initClearItem(item)}" type="preRenderView" />
+    <h:body>
+        <ui:include src="Menu.xhtml"/>
+        <h:form id="form" styleClass="clsMainFrom" onkeypress="if (event.keyCode == 13)
+                    return false;">
+
+            <h:panelGrid styleClass="clsGridMainHeader" columns="1">
+                <h:outputLabel styleClass="clsLabelTop" id="olblcategoryHeader" value="Item Detail"/>
+            </h:panelGrid>
+
+            <h:panelGrid id="grdBarCode" columns="2" rendered="#{item.itemCode!=''}">  
+                <h:panelGrid id="grdBarCodeDesc" columns="2">  
+                    <p:barcode id="barcItemCode" value="#{item.itemCode}" type="code128"/>
+                    <h:inputTextarea rows="3" cols="10" value="#{item.description}" style="border: none;font-size: 10px;"/>
+                </h:panelGrid>
+                <p:commandLink value="Print.Bar.Code (Inc.Description)">
+                    <p:printer target="grdBarCodeDesc" rendered="false"/>
+                </p:commandLink>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainInput" columns="6">
+                <h:outputLabel styleClass="clsLabel" value="Item Type:"/>
+                <h:selectOneMenu styleClass="clsMenu" id="menuItemType" value="#{item.itemType}">
+                    <f:selectItem itemLabel="" itemValue=""/>
+                    <f:selectItem itemLabel="PRODUCT" itemValue="PRODUCT"/>
+                    <f:selectItem itemLabel="SERVICE" itemValue="SERVICE"/>
+                </h:selectOneMenu>
+                <h:outputLabel styleClass="clsLabel" value=""/>
+                <h:outputLabel styleClass="clsLabel" value=""/>
+                <h:outputLabel styleClass="clsLabel" value=""/>
+                <h:outputLabel styleClass="clsLabel" value=""/>
+                <h:outputLabel styleClass="clsLabel" value="Item Code:"/>
+                <h:inputText styleClass="clsInput" id="itxtCode" value="#{item.itemCode}" autocomplete="off">
+                </h:inputText>
+                <h:outputLabel styleClass="clsLabel" value="Description:"/>
+                <h:inputText styleClass="clsInput" id="itxtDescription" value="#{item.description}" autocomplete="off">
+                </h:inputText>
+                <h:outputLabel styleClass="clsLabel" value="Unit:"/>
+                <h:selectOneMenu styleClass="clsMenu" id="menuUnit" value="#{item.unitId}">
+                    <f:selectItem itemLabel="" itemValue="0"/>
+                    <f:selectItems value="#{unitBean.units}" var="u" itemLabel="#{u.unitName}" itemValue="#{u.unitId}"/>
+                </h:selectOneMenu>
+
+                <h:outputLabel styleClass="clsLabel" value="Category:"/>
+                <h:selectOneMenu styleClass="clsMenu" id="menuCategory" value="#{item.categoryId}">
+                    <f:selectItem itemLabel="" itemValue="0"/>
+                    <f:selectItems value="#{categoryBean.categories}" var="c" itemLabel="#{c.categoryName}" itemValue="#{c.categoryId}"/>
+                    <f:ajax event="change" render="menuSubCategory"/>
+                </h:selectOneMenu>
+                <h:outputLabel styleClass="clsLabel" value="SubCategory:"/>
+                <h:selectOneMenu styleClass="clsMenu" id="menuSubCategory" value="#{item.subCategoryId}">
+                    <f:selectItem itemLabel="" itemValue="0"/>
+                    <f:selectItems value="#{subCategoryBean.getSubCategoriesByCategoryId(item.categoryId)}" var="s" itemLabel="#{s.subCategoryName}" itemValue="#{s.subCategoryId}"/>
+                </h:selectOneMenu>
+
+                <h:outputLabel styleClass="clsLabel" value="Re-order Level:"/>
+                <h:inputText styleClass="clsInput" id="itxtReorderLevel" value="#{item.reorderLevel}" autocomplete="off">
+                </h:inputText>
+                <h:outputLabel styleClass="clsLabel" value="Cost Price:"/>
+                <h:inputText styleClass="clsInput" id="itxtUnitCostPrice" value="#{item.unitCostPrice}" autocomplete="off">
+                </h:inputText>
+
+                <h:outputLabel styleClass="clsLabel" value="Retailsale Price:"/>
+                <h:inputText styleClass="clsInput" id="itxtUnitRetailsalePrice" value="#{item.unitRetailsalePrice}" autocomplete="off">
+                </h:inputText>
+                <h:outputLabel styleClass="clsLabel" value="Wholesale Price:"/>
+                <h:inputText styleClass="clsInput" id="itxtUnitWholesalePrice" value="#{item.unitWholesalePrice}" autocomplete="off">
+                </h:inputText>
+
+                <h:outputLabel styleClass="clsLabel" value="VAT Rated"/>
+                <h:selectOneMenu styleClass="clsMenu" id="menuVatRated" value="#{item.vatRated}">
+                    <f:selectItem itemLabel="STANDARD" itemValue="STANDARD"/>
+                    <f:selectItem itemLabel="ZERO" itemValue="ZERO"/>
+                    <f:selectItem itemLabel="EXEMPT" itemValue="EXEMPT"/>
+                </h:selectOneMenu>
+                <h:outputLabel styleClass="clsLabel" value="Is Suspended?"/>
+                <h:selectOneMenu styleClass="clsMenu" id="menuIsSuspended" value="#{item.isSuspended}">
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                </h:selectOneMenu>
+
+            </h:panelGrid>
+
+            <h:panelGrid id="pnlLocationStock" columns="4" style="width: 980px;">
+                <h:outputLabel styleClass="clsLabel" value="Located:"/>
+                <h:dataTable id="dtblLocation" value="#{locationBean.getLocationsByItem(item.itemId)}" var="loc" 
+                             styleClass="cls-table" 
+                             headerClass="cls-table-header" 
+                             rowClasses="cls-table-odd-row,cls-table-even-row" 
+                             columnClasses="cls-table-col1,cls-table-col2,cls-table-col3,cls-table-col4"
+                             > 
+                    <h:column>
+                        <!-- column header -->
+                        <f:facet name="header">Store</f:facet>
+                        <!-- row record -->
+                        #{storeBean.getStore(loc.storeId).storeName}
+                    </h:column>
+
+                    <h:column>
+                        <!-- column header -->
+                        <f:facet name="header">Location</f:facet>
+                        <!-- row record -->
+                        #{loc.locationName}
+                    </h:column>
+                </h:dataTable>
+
+                <h:outputLabel styleClass="clsLabel" value="Stock:"/>
+                <h:dataTable id="dtblStock" value="#{stockBean.getStocksByItem(item.itemId)}" var="stck" 
+                             styleClass="cls-table" 
+                             headerClass="cls-table-header" 
+                             rowClasses="cls-table-odd-row,cls-table-even-row" 
+                             columnClasses="cls-table-col1,cls-table-col2,cls-table-col3,cls-table-col4,cls-table-col5"
+                             > 
+                    <h:column>
+                        <!-- column header -->
+                        <f:facet name="header">Store</f:facet>
+                        <!-- row record -->
+                        #{storeBean.getStore(stck.storeId).storeName}
+                    </h:column>
+
+                    <h:column>
+                        <!-- column header -->
+                        <f:facet name="header">BatchNo</f:facet>
+                        <!-- row record -->
+                        #{stck.batchno}
+                    </h:column>
+
+                    <h:column>
+                        <!-- column header -->
+                        <f:facet name="header">Qty</f:facet>
+                        <!-- row record -->
+                        #{stck.currentqty}
+                    </h:column>
+
+                    <h:column>
+                        <!-- column header -->
+                        <f:facet name="header">Mnf.Date</f:facet>
+                        <!-- row record -->
+                        <h:outputText value="#{stck.itemMnfDate}">
+                            <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                        </h:outputText>
+                    </h:column>
+
+                    <h:column>
+                        <!-- column header -->
+                        <f:facet name="header">Exp.Date</f:facet>
+                        <!-- row record -->
+                        <h:outputText value="#{stck.itemExpDate}">
+                            <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                        </h:outputText>
+                    </h:column>
+                </h:dataTable>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainCommands" columns="1">
+                <h:panelGrid styleClass="clsGridMainCommands1" columns="4">
+                    <h:commandButton styleClass="clsButtonBig" id="cmdbSave" value="SAVE (ALT+S)" accesskey="s">
+                        <f:ajax listener="#{itemBean.saveItem(item)}" execute="@form" render="@form" />
+                    </h:commandButton>
+                    <h:commandButton styleClass="clsButtonBig" id="cmdbClear" value="CLEAR (ALT+C)" accesskey="c">
+                        <f:ajax listener="#{itemBean.clearItem(item)}" execute="@form" render="@form" />
+                    </h:commandButton>
+                    <h:commandButton styleClass="clsButtonBig" id="cmdbDelete" value="DELETE (ALT+D)" onclick="return confirmDelete();" accesskey="d">
+                        <f:ajax listener="#{itemBean.deleteItem(item)}" execute="@form" render="@form" />
+                    </h:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainMessages" columns="1">
+                <h:outputLabel styleClass="clsActionMessage" id="olblActionMessage" value="#{itemBean.actionMessage}"/>
+                <h:messages id="msgsMainMessage" style="color: red"/><br/>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainSearch" columns="1">
+                <h:outputLabel id="olblMainSearch" value="Search Item by: Description or Code"/>
+                <h:inputText id="itxtMainSearch" value="#{itemBean.searchItemDesc}" autocomplete="off">
+                    <f:ajax event="keyup" render="dtblItem"/>
+                </h:inputText>
+            </h:panelGrid>
+
+            <h:dataTable id="dtblItem" value="#{itemBean.getItems(itemBean.searchItemDesc)}" var="itm" 
+                         styleClass="cls-table" 
+                         headerClass="cls-table-header" 
+                         rowClasses="cls-table-odd-row,cls-table-even-row" 
+                         columnClasses="cls-table-col1,cls-table-col2,cls-table-col3,cls-table-col4,cls-table-col5,cls-table-col6"
+                         >
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Type</f:facet>
+                    <!-- row record -->
+                    #{itm.itemType}
+                </h:column>
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Description</f:facet>
+                    <!-- row record -->
+                    #{itm.description}
+                </h:column>
+
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Code</f:facet>
+                    <!-- row record -->
+                    #{itm.itemCode}
+                </h:column>
+
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Unit</f:facet>
+                    <!-- row record -->
+                    #{itm.unitSymbol}
+                </h:column>
+
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Category</f:facet>
+                    <!-- row record -->
+                    #{itm.categoryName}
+                </h:column>
+
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Sub-Category</f:facet>
+                    <!-- row record -->
+                    #{itm.subCategoryName}
+                </h:column>
+
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Action</f:facet>
+                    <!-- row record -->
+                    <h:commandLink value="Edit">
+                        <f:ajax listener="#{itemBean.displayItem(itm,item)}" execute="@form" render="@form"/>
+                    </h:commandLink>
+                    &nbsp;
+                </h:column>
+
+            </h:dataTable>
+
+        </h:form>
+    </h:body>
+</html>
+

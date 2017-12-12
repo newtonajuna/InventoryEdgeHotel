@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Report Bill</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script  language="javascript">
+            function confirmDelete()
+            {
+                return confirm('Are you sure you want to delete this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+        </script> 
+    </h:head>
+    <f:event listener="#{navigationBean.checkAccessDenied('REPORT-TRANSACTIONS', 'View')}" type="preRenderView" />
+    <f:event listener="#{transBean.initClearTransReport(trans)}" type="preRenderView" />
+    <h:body>
+        <ui:include src="Menu.xhtml"/>
+
+        <h:form id="formReport">
+            <h:panelGrid id="id0" columns="1" styleClass="clsPanelReportFilterTitle">
+                <h:outputLabel styleClass="clsLabelReportFilterTitle" value="Transactions Bill Report"/>
+            </h:panelGrid>
+            <h:panelGrid id="id1" columns="8" styleClass="clsPanelReportFilter">
+                <p:outputLabel styleClass="clsLabelReportFilter" id="id2" value="FromStore:"/>
+                <h:selectOneMenu styleClass="clsInputReportFilter" id="menuFromStore" value="#{trans.storeId}" >
+                    <f:selectItem itemLabel="" itemValue="0"/>
+                    <f:selectItems value="#{storeBean.stores}" var="tst" itemLabel="#{tst.storeName}" itemValue="#{tst.storeId}"/>
+                </h:selectOneMenu>
+                <p:outputLabel styleClass="clsLabelReportFilter" id="id10" value="TransDate(From):"/>
+                <p:calendar styleClass="clsInputReportFilter" id="calTransDateFrom" pattern="dd-MM-yyyy" navigator="true" showButtonPanel="true" readonlyInput="false" value="#{trans.transactionDate}">
+                </p:calendar>
+                <p:outputLabel styleClass="clsLabelReportFilter" id="id11" value="TransDate(To):"/>
+                <p:calendar styleClass="clsInputReportFilter" id="calTransDateTo" pattern="dd-MM-yyyy" navigator="true" showButtonPanel="true" readonlyInput="false" value="#{trans.transactionDate2}">
+                </p:calendar>
+                <h:outputLabel styleClass="clsLabelReportFilter" value="Bill Transactor(Provider):"/>
+                <p:autoComplete styleClass="clsInputReportFilter" id="autcBillTransactor" value="#{transactorBean.selectedBillTransactor}" 
+                                completeMethod="#{transactorBean.getTransactorObjectList}" 
+                                var="trct2" 
+                                itemLabel="#{trct2.transactorNames}" 
+                                itemValue="#{trct2}" 
+                                converter="TransactorConverter" style="text-align: left" 
+                                forceSelection="true" 
+                                >
+                    <p:column headerText="Transactor Names" style="text-align: left" >  
+                        #{trct2.transactorNames} 
+                    </p:column> 
+                    <p:column headerText="Contact Person" style="text-align: left">  
+                        #{trct2.cpName} 
+                    </p:column> 
+                    <p:ajax event="itemSelect" listener="#{trans.setBillTransactorId(transactorBean.selectedBillTransactor.transactorId)}"/>
+                    <p:ajax event="change" listener="#{trans.setBillTransactorId(transactorBean.selectedBillTransactor.transactorId)}" rendered="#{transactorBean.selectedBillTransactor!=null} "/>
+                </p:autoComplete>
+
+                <p:commandButton styleClass="clsButtonReportFilter" id="cmdbSearch" value="Search" update="tblTransaction pnlgActionMessage" />
+
+            </h:panelGrid>
+            <h:panelGrid id="pnlgActionMessage">
+                <p:outputLabel value="#{transBean.actionMessage}" style="color: red;"/>
+            </h:panelGrid>
+
+            <p:dataTable tableStyle="width:auto;" id="tblTransaction" var="rts" value="#{transBean.getReportBill(trans)}" paginator="true" rows="10" 
+                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}" 
+                         rowsPerPageTemplate="10,20,50,100,200,500">
+                <f:facet name="header">
+                    Bills Report(#{transBean.getReportTransCount()} Items Returned)
+                    <p:commandButton id="toggler" type="button" value="Columns" icon="ui-icon-calculator" />
+                    <p:columnToggler datasource="tblTransaction" trigger="toggler" />
+                </f:facet>
+                <p:column style="width:16px">
+                    <p:rowToggler />
+                </p:column>
+                <p:column headerText="TransId">
+                    <p:commandButton id="cmdbViewTrans" icon="ui-icon-search" actionListener="#{transBean.ViewTrans(rts.transactionId)}">
+                    </p:commandButton>
+                    <h:outputText value="#{rts.transactionId}">
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="FromStore">
+                    <h:outputText value="#{rts.storeName}"/>
+                </p:column>
+                <p:column headerText="BillTransactor(Provider)">
+                    <h:outputText value="#{rts.billTransactorName}" />
+                </p:column>
+                <p:column headerText="SchemeName">
+                    <h:outputText value="#{rts.schemeTransactorName}" />
+                </p:column>
+                <p:column headerText="SchemeCardNo">
+                    <h:outputText value="#{rts.schemeCardNumber}" />
+                </p:column>
+                <p:column headerText="Transactor(Customer)">
+                    <h:outputText value="#{rts.transactorName}" />
+                </p:column>
+                <p:column headerText="TransDate">
+                    <h:outputText value="#{rts.transactionDate}">
+                        <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="GrandTotal">
+                    <h:outputText value="#{rts.grandTotal}">
+                        <f:convertNumber pattern="###,###.##"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="OfferedBy">
+                    <h:outputText value="#{rts.transactionUserDetailName}" />
+                </p:column>
+                <p:rowExpansion>
+                    <p:dataTable value="#{transItemBean.getReportBillTransItemsSummary(rts.transactionId)}" var="ti">
+                        <p:column headerText="Category">
+                            <h:outputText value="#{ti.categoryName}"/>
+                        </p:column>
+                        <p:column headerText="Amount">
+                            <h:outputText value="#{ti.amountIncVat}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:rowExpansion>
+            </p:dataTable>
+
+            <h:panelGrid id="id15" columns="1" style="margin-top: 20px;">
+                <p:panel header="Export Bill Report">
+                    <h:commandLink>
+                        <p:commandButton icon="ui-icon-circle-arrow-s" value="Excel"/>
+                        <p:dataExporter type="xls" target="tblTransaction" fileName="ReportTransaction" />
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <p:commandButton icon="ui-icon-circle-arrow-s" value="PDF"/>
+                        <p:dataExporter type="pdf" target="tblTransaction" fileName="ReportTransaction"/>
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <p:commandButton icon="ui-icon-circle-arrow-s" value="CSV"/>
+                        <p:dataExporter type="csv" target="tblTransaction" fileName="ReportTransaction" />
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <p:commandButton icon="ui-icon-circle-arrow-s" value="XML"/>
+                        <p:dataExporter type="xml" target="tblTransaction" fileName="ReportTransaction" />
+                    </h:commandLink>
+                </p:panel>
+            </h:panelGrid>
+
+
+        </h:form>
+    </h:body>
+</html>
+

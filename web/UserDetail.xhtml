@@ -1,0 +1,176 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>User Details</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script  language="javascript">
+            function confirmDelete()
+            {
+                return confirm('Are you sure you want to delete this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+        </script> 
+    </h:head>
+    <f:event listener="#{navigationBean.checkAccessDenied('SETTING', 'View')}" type="preRenderView" />
+    <h:body>
+        <ui:include src="Menu.xhtml"/>
+        <h:form id="form" styleClass="clsMainFrom">
+
+            <h:panelGrid styleClass="clsGridMainHeader" columns="1">
+                <h:outputLabel styleClass="clsLabelTop" id="olblcategoryHeader" value="User Details"/>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainInput" columns="6">
+                
+                <h:outputLabel styleClass="clsLabel" value="User Name:"/>
+                <h:inputText styleClass="clsInput" id="itxtUserName" value="#{userDetail.userName}" title="Username MUST be between 5-to-20 characters" autocomplete="off" disabled="#{userDetail.userName=='system'}">
+                </h:inputText>
+                
+                <h:outputLabel styleClass="clsLabel" value="Password:" title="Password MUST be between 5-to-20 characters"/>
+                <h:inputSecret styleClass="clsInput" id="isecUserPassword" value="#{userDetail.userPassword}" redisplay="true" autocomplete="off">
+                </h:inputSecret>
+                
+                <h:outputLabel styleClass="clsLabel" value="Confirm Password:" title="Re-enter password to confirm"/>
+                <h:inputSecret styleClass="clsInput" id="isecUserPasswordConfirm" value="#{userDetail.userPasswordConfirm}" redisplay="true" autocomplete="off">
+                </h:inputSecret>
+                
+                <h:outputLabel styleClass="clsLabel" value="First Name:"/>
+                <h:inputText styleClass="clsInput" id="itxtFirstName" value="#{userDetail.firstName}" autocomplete="off" disabled="#{userDetail.userName=='system'}">
+                </h:inputText>
+                
+                <h:outputLabel styleClass="clsLabel" value="Second Name:"/>
+                <h:inputText styleClass="clsInput" id="itxtSecondName" value="#{userDetail.secondName}" autocomplete="off" disabled="#{userDetail.userName=='system'}">
+                </h:inputText>
+                
+                <h:outputLabel styleClass="clsLabel" value="Third Name:"/>
+                <h:inputText styleClass="clsInput" id="itxtThirdName" value="#{userDetail.thirdName}" autocomplete="off" disabled="#{userDetail.userName=='system'}">
+                </h:inputText>
+                
+                <h:outputLabel styleClass="clsLabel" value="Lock User?:"/>
+                <h:selectOneMenu styleClass="clsMenu" id="menuIsUserLocked" value="#{userDetail.isUserLocked}" disabled="#{userDetail.userName=='system'}">
+                    <f:selectItem itemLabel="" itemValue=""/>
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabel" value="General Admin?:"/>
+                <h:selectOneMenu styleClass="clsMenu" id="menuIsUserGenAdmin" value="#{userDetail.isUserGenAdmin}" disabled="#{userDetail.userName=='system'}">
+                    <f:selectItem itemLabel="" itemValue=""/>
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabel" value="User Category:"/>
+                <h:selectOneMenu styleClass="clsMenu" id="menuUserCategory" value="#{userDetail.userCategoryId}">
+                    <f:selectItem itemLabel="" itemValue="0"/>
+                    <f:selectItems value="#{userCategoryBean.userCategories}" var="u" itemLabel="#{u.userCategoryName}" itemValue="#{u.userCategoryId}"/>
+                </h:selectOneMenu>
+                
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainCommands" columns="2">
+            <h:panelGrid styleClass="clsGridMainCommands1" columns="4">
+                <h:commandButton styleClass="clsButton" id="cmdbSave" value="Save">
+                    <f:actionListener binding="#{userDetailBean.saveUserDetail(userDetail)}" />
+                </h:commandButton>
+                <h:commandButton styleClass="clsButton" id="cmdbClear" value="Clear">
+                    <f:actionListener binding="#{userDetailBean.clearUserDetail(userDetail)}" />
+                </h:commandButton>
+                <h:commandButton styleClass="clsButton" id="cmdbDelete" value="Delete" onclick="return confirmDelete();">
+                    <f:actionListener binding="#{userDetailBean.deleteUserDetail(userDetail)}" />
+                </h:commandButton>
+            </h:panelGrid>
+            <h:panelGrid styleClass="clsGridMainCommands2" columns="4">
+            </h:panelGrid>
+
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainMessages" columns="1">
+                <h:outputLabel styleClass="clsActionMessage" id="olblActionMessage" value="#{userDetailBean.actionMessage}"/>
+                <h:messages id="msgsMainMessage" style="color: red"/><br/>
+            </h:panelGrid>
+            
+            <h:panelGrid styleClass="clsGridMainSearch" columns="1">
+                <h:outputLabel id="olblMainSearch" value="Search Users"/>
+                <h:outputLabel id="olblMainSearchDesc" value="(Search by username or any of the names(First,Second,Third)!)"/>
+                <h:inputText id="itxtMainSearch" value="#{userDetailBean.searchUserName}" autocomplete="off">
+                    <f:ajax event="keyup" render="dtblUserDetail"/>
+                </h:inputText>
+            </h:panelGrid>
+
+            <h:dataTable id="dtblUserDetail" value="#{userDetailBean.getUserDetailsByNames(userDetailBean.searchUserName)}" var="u" 
+                         styleClass="cls-table" 
+                         headerClass="cls-table-header" 
+                         rowClasses="cls-table-odd-row,cls-table-even-row" 
+                         columnClasses="cls-table-col1,cls-table-col2,cls-table-col3,cls-table-col4,cls-table-col5,cls-table-col6,cls-table-col7"
+                         > 
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">User Name</f:facet>
+                    <!-- row record -->
+                    #{u.userName}
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">First Name</f:facet>
+                    <!-- row record -->
+                    #{u.firstName}
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Second Name</f:facet>
+                    <!-- row record -->
+                    #{u.secondName}
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Third Name</f:facet>
+                    <!-- row record -->
+                    #{u.thirdName}
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Locked?</f:facet>
+                    <!-- row record -->
+                    #{u.isUserLocked}
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Admin</f:facet>
+                    <!-- row record -->
+                    #{u.isUserGenAdmin}
+                </h:column>
+                
+                 <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">User Category</f:facet>
+                    <!-- row record -->
+                    #{userCategoryBean.getUserCategory(u.userCategoryId).userCategoryName}
+                </h:column>
+
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Action</f:facet>
+                    <!-- row record -->
+                    <h:commandLink value="Edit" action="#{userDetailBean.displayUserDetail(u,userDetail)}" />
+                    &nbsp;
+                </h:column>
+                
+            </h:dataTable>
+
+        </h:form>
+    </h:body>
+</html>
+

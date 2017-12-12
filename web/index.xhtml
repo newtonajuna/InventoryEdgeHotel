@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Index Title</title>
+    </h:head>
+    
+    <h:body>
+      <h:form>
+          <h:inputText id="in1" value="#{security.enc}">
+          </h:inputText>
+          <h:outputLabel id="out1" value="#{security.Encrypt(security.enc)}" />
+          <h:commandButton value="Encrypt">
+              <f:ajax execute="in1" render="out1"/>
+          </h:commandButton>
+          
+          <h:inputText id="in2" value="#{security.decr}">
+          </h:inputText>
+          <h:outputLabel id="out2" value="#{security.Decrypt(security.decr)}" />
+          <h:commandButton value="Decrypt">
+              <f:ajax execute="in2" render="out2"/>
+          </h:commandButton>
+          
+      </h:form>
+    </h:body>
+</html>
+

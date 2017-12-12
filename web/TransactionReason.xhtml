@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Transaction Reason</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script  language="javascript">
+            function confirmDelete()
+            {
+                return confirm('Are you sure you want to delete this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+        </script> 
+    </h:head>
+    <f:event listener="#{navigationBean.checkAccessDenied('SETTING', 'View')}" type="preRenderView" />
+    <h:body>
+        <ui:include src="Menu.xhtml"/>
+        <h:form id="form" styleClass="clsMainFrom">
+
+            <h:panelGrid styleClass="clsGridMainHeader" columns="1">
+                <h:outputLabel styleClass="clsLabelTop" id="olblTransactionReasonHeader" value="Transaction Reason"/>
+            </h:panelGrid>
+
+            <h:dataTable id="dtblTransactionReason" value="#{transactionReasonBean.transactionReasons}" var="tr" 
+                         styleClass="cls-table" 
+                         headerClass="cls-table-header" 
+                         rowClasses="cls-table-odd-row,cls-table-even-row" 
+                         columnClasses="cls-table-col1,cls-table-col2,cls-table-col3"
+                         > 
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Transaction Type Name</f:facet>
+                    <!-- row record -->
+                    #{tr.transactionTypeName}
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Transaction Reason Name</f:facet>
+                    <!-- row record -->
+                    #{tr.transactionReasonName}
+                </h:column>
+                
+            </h:dataTable>
+
+        </h:form>
+    </h:body>
+</html>
+

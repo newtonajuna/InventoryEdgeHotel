@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <h:head>
+        <title>Login</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script  type="text/javascript">
+            function confirmDelete()
+            {
+                return confirm('Are you sure you want to delete this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+        </script> 
+    </h:head>
+    <f:event listener="#{dBConnection.readConnectionConfigurations('ConfigFile')}" type="preRenderView" />
+    <h:body>
+        <h:form id="form" styleClass="clsMainFrom">  
+            <h:panelGrid id="pnlgLoginHeader" styleClass="clsGridMainHeader" columns="3">
+                <h:outputLabel styleClass="clsLabelTop" value="WINGERsoft Hotel Master"/>
+                <h:outputLabel styleClass="clsLabelTop" value="#{companySetting.getBranchCode()}: #{dBConnection.isMySQLConnectionAvailable()}"/>
+                <h:outputLabel styleClass="clsLabelTop" value="INTER-BRANCH : #{dBConnection.isINTER_BRANCH_MySQLConnectionAvailable()}"/>
+            </h:panelGrid>
+            <h:panelGrid styleClass="clsGridMainInput" columns="2">
+                <h:panelGrid styleClass="clsGridMainInput" columns="1">
+                    <h:outputLabel styleClass="clsLabel" style="color: blue;font-weight: bold;" value="#{companySetting.getLICENSE_CLIENT_NAME()}"/>
+                    <h:outputLabel styleClass="clsLabel" style="color: green;" value="#{companySetting.getBranchCode()}"/>
+                    <h:graphicImage id="gimgLogo" alt="L.O.G.O" value="#{companySetting.getLogoUrl()}" />
+                </h:panelGrid>
+                <h:panelGrid styleClass="clsGridMainInput" columns="2" bgcolor="lightsalmon">
+                    <h:outputLabel styleClass="clsLabel" value="User Name:"/>
+                    <h:inputText styleClass="clsInput" id="itxtUserName" value="#{login.loggedInUserName}" autocomplete="off"> 
+                        <f:ajax event="change" listener="#{login.setLoggedInUserDetail(null)}" render="menuStore pnlgLoginHeader"/>
+                        <f:ajax event="keyup" listener="#{login.setLoggedInUserDetail(null)}" render="menuStore pnlgLoginHeader"/>
+                    </h:inputText>
+
+                     <h:outputLabel styleClass="clsLabel" value="Password:"/>
+                     <h:inputSecret styleClass="clsInput" id="itxtPassword" value="#{login.loggedInPassword}" autocomplete="off">
+                         <f:ajax event="change" listener="#{login.setLoggedInUserDetail(null)}" render="menuStore pnlgLoginHeader"/>
+                        <f:ajax event="keyup" listener="#{login.setLoggedInUserDetail(null)}" render="menuStore pnlgLoginHeader"/>
+                     </h:inputSecret>
+
+                     <h:outputLabel styleClass="clsLabel" value=""/>
+                     <h:commandButton styleClass="clsButtonMedium" value="CONFIRM (ALT+C)" accesskey="c">
+                         <f:ajax listener="#{login.confirmUser()}" execute="itxtUserName itxtPassword" render="menuStore olblActionMessageSuccess olblActionMessageFailure pnlgLoginHeader"/>
+                    </h:commandButton>
+
+                     <h:outputLabel styleClass="clsLabel" value="Store:"/>
+                     <h:selectOneMenu styleClass="clsMenu" id="menuStore" value="#{login.loggedInStoreId}" >
+                        <f:selectItem itemLabel="" itemValue="0"/>
+                        <f:selectItems value="#{login.getUserStores()}" var="tst" itemLabel="#{tst.storeName}" itemValue="#{tst.storeId}"/>
+                     </h:selectOneMenu>
+                </h:panelGrid>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainCommands" columns="2" style="text-align: center;">
+                <h:commandButton styleClass="clsButtonVeryBig" style="color: green;" id="cmdbLogin" value="LOGIN (ALT+L)" accesskey="l" rendered="true"  >
+                    <f:ajax listener="#{login.userLogin(1)}" execute="menuStore itxtUserName itxtPassword" render="olblActionMessageSuccess olblActionMessageFailure pnlgLoginHeader"/>
+                </h:commandButton>
+                <h:commandButton styleClass="clsButtonVeryBig" id="cmdbLogin2" value="INTER-BRANCH - LOGIN (ALT+I)" accesskey="i" rendered="true" >
+                    <f:ajax listener="#{login.userLogin(2)}" execute="menuStore itxtUserName itxtPassword" render="olblActionMessageSuccess olblActionMessageFailure pnlgLoginHeader"/>
+                </h:commandButton>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainMessages" columns="1">
+                <h:outputLabel styleClass="clsActionMessage" id="olblActionMessageSuccess" style="color:green" value="#{login.actionMessageSuccess}"/>
+                <h:outputLabel styleClass="clsActionMessage" id="olblActionMessageFailure" style="color: red" value="#{login.actionMessageFailure}"/>
+                <h:outputLabel id="outlNavMsg" value="#{navigationBean.navMsg}" style="color: red"/>
+                <h:messages id="msgsMainMessage" style="color: red"/><br/>
+            </h:panelGrid>
+
+        </h:form>
+    </h:body>
+</html>
+

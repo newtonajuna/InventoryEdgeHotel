@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Report Transactor Ledger Summary</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script  language="javascript">
+            function confirmDelete()
+            {
+                return confirm('Are you sure you want to delete this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+        </script> 
+    </h:head>
+    <f:event listener="#{navigationBean.checkAccessDenied('REPORT-TRANSACTORS', 'View')}" type="preRenderView" />
+    <h:body>
+        <ui:include src="Menu.xhtml"/>
+        
+        <h:form id="formReport">
+            <h:panelGrid id="id0" columns="1" styleClass="clsPanelReportFilterTitle">
+                <h:outputLabel styleClass="clsLabelReportFilterTitle" value="Transactors Ledger Report - Summary"/>
+            </h:panelGrid>
+            <h:panelGrid id="pnlgActionMessage">
+                <p:outputLabel value="#{transactorLedgerBean.actionMessage}" style="color: red;"/>
+            </h:panelGrid>
+            
+            <p:dataTable tableStyle="width:auto;" id="tblTransactorLedgerSummary" var="rtss" value="#{transactorLedgerBean.getReportTransactorLedgerSummaryAll()}" 
+                         >
+                    <f:facet name="header">
+                        Transactor Ledger Summary Report
+                    </f:facet>
+                
+                    <p:column headerText="Total DEBIT">
+                        <h:outputText value="#{rtss.sumAmountDebit}">
+                            <f:convertNumber pattern="###,###.##"/>
+                        </h:outputText>
+                    </p:column>
+                
+                    <p:column headerText="Total CREDIT">
+                        <h:outputText value="#{rtss.sumAmountCredit}">
+                            <f:convertNumber pattern="###,###.##"/>
+                        </h:outputText>
+                    </p:column>
+                 
+                    <p:column headerText="Net Debt">
+                        <h:outputText value="#{rtss.netDebt}">
+                            <f:convertNumber pattern="###,###.##"/>
+                        </h:outputText>
+                    </p:column>
+                
+                    <p:column headerText="Net Credit">
+                        <h:outputText value="#{rtss.netCredit}">
+                            <f:convertNumber pattern="###,###.##"/>
+                        </h:outputText>
+                    </p:column>
+             </p:dataTable>
+            
+            <h:panelGrid id="id16" columns="1" style="margin-top: 20px;">
+                <p:panel header="Export Transactor Summary Report">
+                    <h:commandLink>
+                        <p:commandButton icon="ui-icon-circle-arrow-s" value="Excel"/>
+                        <p:dataExporter type="xls" target="tblTransactorLedgerSummary" fileName="ReportTransactorLedgerSummaryAll" />
+                    </h:commandLink>
+
+                    <h:commandLink>
+			<p:commandButton icon="ui-icon-circle-arrow-s" value="PDF"/>
+			<p:dataExporter type="pdf" target="tblTransactorLedgerSummary" fileName="ReportTransactorLedgerSummaryAll"/>
+                    </h:commandLink>
+		
+                    <h:commandLink>
+			<p:commandButton icon="ui-icon-circle-arrow-s" value="CSV"/>
+			<p:dataExporter type="csv" target="tblTransactorLedgerSummary" fileName="ReportTransactorLedgerSummaryAll" />
+                    </h:commandLink>
+		
+                    <h:commandLink>
+			<p:commandButton icon="ui-icon-circle-arrow-s" value="XML"/>
+			<p:dataExporter type="xml" target="tblTransactorLedgerSummary" fileName="ReportTransactorLedgerSummaryAll" />
+                    </h:commandLink>
+                </p:panel>
+             </h:panelGrid>
+            
+            
+            <p:dataTable tableStyle="width:auto;" id="tblTransactorLedger" var="rts" value="#{transactorLedgerBean.getReportTransactorLedgerSummaryAllIndividual()}" 
+                         >
+                    <f:facet name="header">
+                        All Transactors Ledger Report 
+                        <p:commandButton id="toggler" type="button" value="Columns" icon="ui-icon-calculator" />
+                        <p:columnToggler datasource="tblTransactorLedger" trigger="toggler" />
+                    </f:facet>
+                
+                    <p:column headerText="Bill Transactor">
+                        <h:outputText value="#{rts.billTransactorNames}">
+                        </h:outputText>
+                    </p:column>
+                
+                    <p:column headerText="Debit">
+                        <h:outputText value="#{rts.sumAmountDebit}">
+                            <f:convertNumber pattern="###,###.##"/>
+                        </h:outputText>
+                    </p:column>
+                
+                    <p:column headerText="Credit">
+                        <h:outputText value="#{rts.sumAmountCredit}">
+                            <f:convertNumber pattern="###,###.##"/>
+                        </h:outputText>
+                    </p:column>
+                
+                    <p:column headerText="Net Debt">
+                        <h:outputText value="#{rts.netDebt}">
+                            <f:convertNumber pattern="###,###.##"/>
+                        </h:outputText>
+                    </p:column>
+                
+                    <p:column headerText="Net Credit">
+                        <h:outputText value="#{rts.netCredit}">
+                            <f:convertNumber pattern="###,###.##"/>
+                        </h:outputText>
+                    </p:column>
+                
+             </p:dataTable>
+            
+            <h:panelGrid id="id15" columns="1" style="margin-top: 20px;">
+                <p:panel header="Export All Transactor Ledger Report">
+                    <h:commandLink>
+                        <p:commandButton icon="ui-icon-circle-arrow-s" value="Excel"/>
+                        <p:dataExporter type="xls" target="tblTransactorLedger" fileName="ReportTransactorsLedgerAllIndividual" />
+                    </h:commandLink>
+
+                    <h:commandLink>
+			<p:commandButton icon="ui-icon-circle-arrow-s" value="PDF"/>
+			<p:dataExporter type="pdf" target="tblTransactorLedger" fileName="ReportTransactorsLedgerAllIndividual"/>
+                    </h:commandLink>
+		
+                    <h:commandLink>
+			<p:commandButton icon="ui-icon-circle-arrow-s" value="CSV"/>
+			<p:dataExporter type="csv" target="tblTransactorLedger" fileName="ReportTransactorsLedgerAllIndividual" />
+                    </h:commandLink>
+		
+                    <h:commandLink>
+			<p:commandButton icon="ui-icon-circle-arrow-s" value="XML"/>
+			<p:dataExporter type="xml" target="tblTransactorLedger" fileName="ReportTransactorsLedgerAllIndividual" />
+                    </h:commandLink>
+                </p:panel>
+             </h:panelGrid>
+            
+        </h:form>
+    </h:body>
+</html>
+

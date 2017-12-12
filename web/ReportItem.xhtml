@@ -1,0 +1,206 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Item Report</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script  language="javascript">
+            function confirmDelete()
+            {
+                return confirm('Are you sure you want to delete this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+        </script> 
+    </h:head>
+    <f:event listener="#{navigationBean.checkAccessDenied('REPORT-ITEMS', 'View')}" type="preRenderView" />
+    <f:event listener="#{generalUserSetting.initReportRetrievalOption(false)}" type="preRenderView" />
+
+    <h:body>
+        <ui:include src="Menu.xhtml"/>
+
+        <h:form id="formReport">
+            <h:panelGrid id="id0" columns="1" styleClass="clsPanelReportFilterTitle">
+                <h:outputLabel styleClass="clsLabelReportFilterTitle" value="All Items Report"/>
+            </h:panelGrid>
+            <h:panelGrid id="id1" columns="10" styleClass="clsPanelReportFilter">
+                <h:outputLabel styleClass="clsLabelReportFilter" value="ACTIVE:"/>
+                <h:selectBooleanCheckbox label="Active" value="#{generalUserSetting.reportRetrievalOption}">
+                </h:selectBooleanCheckbox>
+                <h:outputLabel styleClass="clsLabelReportFilter" value="Category:"/>
+                <h:selectOneMenu styleClass="clsInputReportFilter" id="menuCategory" value="#{item.categoryId}">
+                    <f:selectItem itemLabel="" itemValue="0"/>
+                    <f:selectItems value="#{categoryBean.categories}" var="c" itemLabel="#{c.categoryName}" itemValue="#{c.categoryId}"/>
+                    <f:ajax event="change" render="menuSubCategory"/>
+                </h:selectOneMenu>
+                <h:outputLabel styleClass="clsLabelReportFilter" value="SubCategory:"/>
+                <h:selectOneMenu styleClass="clsInputReportFilter" id="menuSubCategory" value="#{item.subCategoryId}">
+                    <f:selectItem itemLabel="" itemValue="0"/>
+                    <f:selectItems value="#{subCategoryBean.getSubCategoriesByCategoryId(item.categoryId)}" var="s" itemLabel="#{s.subCategoryName}" itemValue="#{s.subCategoryId}"/>
+                </h:selectOneMenu>
+                <h:outputLabel styleClass="clsLabelReportFilter" value="Is Suspended ?"/>
+                <h:selectOneMenu styleClass="clsInputReportFilter" id="menuIsSuspended" value="#{item.isSuspended}">
+                    <f:selectItem itemLabel="" itemValue=""/>
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+
+                <p:commandButton styleClass="clsButtonReportFilter" id="cmdbSearch" value="Search" update="tblReportItem tblReportItemSummary pnlgActionMessage"/>
+            </h:panelGrid>
+            <h:panelGrid id="pnlgActionMessage">
+                <p:outputLabel value="#{itemBean.actionMessage}" style="color: red;"/>
+            </h:panelGrid>
+
+            <p:dataTable tableStyle="width:auto;" id="tblReportItem" var="rts" value="#{itemBean.getReportItems(item,generalUserSetting.reportRetrievalOption)}" 
+                         paginator="true" rows="10" 
+                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}" 
+                         rowsPerPageTemplate="10,20,50,100,200,500">
+                <f:facet name="header">
+                    All Items Report (#{itemBean.getReportItemsCount()} Items Returned)
+                    <p:commandButton id="toggler" type="button" value="Columns" icon="ui-icon-calculator" />
+                    <p:columnToggler datasource="tblReportItem" trigger="toggler" />
+                </f:facet>
+                <p:column headerText="Type">
+                    <h:outputText value="#{rts.itemType}">
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="ItemId">
+                    <h:outputText value="#{rts.itemId}">
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="ItemCode">
+                    <h:outputText value="#{rts.itemCode}">
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Description">
+                    <h:outputText value="#{rts.description}">
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Unit">
+                    <h:outputText value="#{rts.unitSymbol}">
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="ReorderLevel">
+                    <h:outputText value="#{rts.reorderLevel}">
+                        <f:convertNumber pattern="###,###.##"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="CostPrice">
+                    <h:outputText value="#{rts.unitCostPrice}">
+                        <f:convertNumber pattern="###,###.##"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="WholeSalePrice">
+                    <h:outputText value="#{rts.unitWholesalePrice}">
+                        <f:convertNumber pattern="###,###.##"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="RetailSalePrice">
+                    <h:outputText value="#{rts.unitRetailsalePrice}">
+                        <f:convertNumber pattern="###,###.##"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="VatRated">
+                    <h:outputText value="#{rts.vatRated}">
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Suspended">
+                    <h:outputText value="#{rts.isSuspended}">
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Category">
+                    <h:outputText value="#{rts.categoryName}">
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="SubCategory">
+                    <h:outputText value="#{rts.subCategoryName}">
+                    </h:outputText>
+                </p:column>
+
+            </p:dataTable>
+
+            <h:panelGrid id="id15" columns="1" style="margin-top: 20px;">
+                <p:panel header="Export All Items Report">
+                    <h:commandLink>
+                        <p:commandButton icon="ui-icon-circle-arrow-s" value="Excel"/>
+                        <p:dataExporter type="xls" target="tblReportItem" fileName="AllItemsReport" />
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <p:commandButton icon="ui-icon-circle-arrow-s" value="PDF"/>
+                        <p:dataExporter type="pdf" target="tblReportItem" fileName="AllItemsReport"/>
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <p:commandButton icon="ui-icon-circle-arrow-s" value="CSV"/>
+                        <p:dataExporter type="csv" target="tblReportItem" fileName="AllItemsReport" />
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <p:commandButton icon="ui-icon-circle-arrow-s" value="XML"/>
+                        <p:dataExporter type="xml" target="tblReportItem" fileName="AllItemsReport" />
+                    </h:commandLink>
+                </p:panel>
+            </h:panelGrid>
+
+            <p:dataTable tableStyle="width:auto;" id="tblReportItemSummary" var="rtss" value="#{itemBean.getReportItemsSummary(item,generalUserSetting.reportRetrievalOption)}" 
+                         >
+                <f:facet name="header">
+                    All Items Summary Report
+                </f:facet>
+
+                <p:column headerText="Category">
+                    <h:outputText value="#{rtss.categoryName}">
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="SubCategory">
+                    <h:outputText value="#{rtss.subCategoryName}">
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Items">
+                    <h:outputText value="#{rtss.countItems}">
+                        <f:convertNumber pattern="###,###.##"/>
+                    </h:outputText>
+                </p:column>
+            </p:dataTable>
+
+            <h:panelGrid id="id16" columns="1" style="margin-top: 20px;">
+                <p:panel header="Export All Items Summary Report">
+                    <h:commandLink>
+                        <p:commandButton icon="ui-icon-circle-arrow-s" value="Excel"/>
+                        <p:dataExporter type="xls" target="tblReportItemSummary" fileName="AllItemsReportSummary" />
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <p:commandButton icon="ui-icon-circle-arrow-s" value="PDF"/>
+                        <p:dataExporter type="pdf" target="tblReportItemSummary" fileName="AllItemsReportSummary"/>
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <p:commandButton icon="ui-icon-circle-arrow-s" value="CSV"/>
+                        <p:dataExporter type="csv" target="tblReportItemSummary" fileName="AllItemsReportSummary" />
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <p:commandButton icon="ui-icon-circle-arrow-s" value="XML"/>
+                        <p:dataExporter type="xml" target="tblReportItemSummary" fileName="AllItemsReportSummary" />
+                    </h:commandLink>
+                </p:panel>
+            </h:panelGrid>
+
+        </h:form>
+    </h:body>
+</html>
+

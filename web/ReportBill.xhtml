@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <title>Report Bill</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script  language="javascript">
+            function confirmDelete()
+            {
+                return confirm('Are you sure you want to delete this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+        </script> 
+    </h:head>
+    <f:event listener="#{navigationBean.checkAccessDenied('REPORT-TRANSACTIONS', 'View')}" type="preRenderView" />
+    <f:event listener="#{transBean.initClearTransReport(trans)}" type="preRenderView" />
+    <h:body>
+        <ui:include src="Menu.xhtml"/>
+
+        <h:form id="formReport">
+            <h:panelGrid id="id0" columns="1" styleClass="clsPanelReportFilterTitle">
+                <h:outputLabel styleClass="clsLabelReportFilterTitle" value="Transactions Bill Report"/>
+            </h:panelGrid>
+            <h:panelGrid id="id1" columns="8" styleClass="clsPanelReportFilter">
+                <p:outputLabel styleClass="clsLabelReportFilter" id="id2" value="FromStore:"/>
+                <h:selectOneMenu styleClass="clsInputReportFilter" id="menuFromStore" value="#{trans.storeId}" >
+                    <f:selectItem itemLabel="" itemValue="0"/>
+                    <f:selectItems value="#{storeBean.stores}" var="tst" itemLabel="#{tst.storeName}" itemValue="#{tst.storeId}"/>
+                </h:selectOneMenu>
+                <p:outputLabel styleClass="clsLabelReportFilter" id="id10" value="TransDate(From):"/>
+                <p:calendar styleClass="clsInputReportFilter" id="calTransDateFrom" pattern="dd-MM-yyyy" navigator="true" showButtonPanel="true" readonlyInput="false" value="#{trans.transactionDate}">
+                </p:calendar>
+                <p:outputLabel styleClass="clsLabelReportFilter" id="id11" value="TransDate(To):"/>
+                <p:calendar styleClass="clsInputReportFilter" id="calTransDateTo" pattern="dd-MM-yyyy" navigator="true" showButtonPanel="true" readonlyInput="false" value="#{trans.transactionDate2}">
+                </p:calendar>
+                <h:outputLabel styleClass="clsLabelReportFilter" value="Bill Transactor(Provider):"/>
+                <p:autoComplete styleClass="clsInputReportFilter" id="autcBillTransactor" value="#{transactorBean.selectedBillTransactor}" 
+                                completeMethod="#{transactorBean.getTransactorObjectList}" 
+                                var="trct2" 
+                                itemLabel="#{trct2.transactorNames}" 
+                                itemValue="#{trct2}" 
+                                converter="TransactorConverter" style="text-align: left" 
+                                forceSelection="true" 
+                                >
+                    <p:column headerText="Transactor Names" style="text-align: left" >  
+                        #{trct2.transactorNames} 
+                    </p:column> 
+                    <p:column headerText="Contact Person" style="text-align: left">  
+                        #{trct2.cpName} 
+                    </p:column> 
+                    <p:ajax event="itemSelect" listener="#{trans.setBillTransactorId(transactorBean.selectedBillTransactor.transactorId)}"/>
+                    <p:ajax event="change" listener="#{trans.setBillTransactorId(transactorBean.selectedBillTransactor.transactorId)}" rendered="#{transactorBean.selectedBillTransactor!=null} "/>
+                </p:autoComplete>
+
+                <p:commandButton styleClass="clsButtonReportFilter" id="cmdbSearch" value="Search" update="pnlTransaction pnlgActionMessage" />
+
+            </h:panelGrid>
+            <h:panelGrid id="pnlgActionMessage">
+                <p:outputLabel value="#{transBean.actionMessage}" style="color: red;"/>
+            </h:panelGrid>
+            <p:commandButton id="cmdbPrint" styleClass="clsButtonBigLonger" value="Print Bill Below (ALT+P)" icon="ui-icon-print" type="button" accesskey="p">
+                <p:printer target="pnlTransaction" rendered="false"/>
+            </p:commandButton>
+            <p:panel id="pnlTransaction" style="border: none;">
+                <table id="tblTransaction" border="1" cellspacing="0" cellpadding="2">
+                    <tr style="background-color: gold;font-weight: bold">
+                        <td colspan="4">#{transactorBean.selectedBillTransactor.transactorNames}</td>
+                        <td colspan="3">
+                            <h:outputText value="#{trans.transactionDate}">
+                                <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                            </h:outputText> to 
+                            <h:outputText value="#{trans.transactionDate2}">
+                                <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                            </h:outputText>
+                        </td>
+                        <td colspan="2">
+                            <h:outputText value="#{transBean.getReportBillTotal(trans)}">
+                                <f:convertNumber pattern="###,###.##"/>
+                            </h:outputText>
+                        </td>
+                    </tr>
+                    <tr style="background-color: #ADD8E6;font-weight: bold">
+                        <td>#{transactionTypeBean.getTransactionType(2).transactionNumberLabel}</td>
+                        <td>SchemeName</td>
+                        <td>SchemeCardNo</td>
+                        <td>#{transactionTypeBean.getTransactionType(2).transactorLabel}</td>
+                        <td>#{transactionTypeBean.getTransactionType(2).transactionDateLabel}</td>
+                        <td>Category</td>
+                        <td>Amount</td>
+                        <td>GrandTotal</td>
+                        <td>#{transactionTypeBean.getTransactionType(2).transactionUserLabel}</td>
+                    </tr>
+                    <ui:repeat var="t" value="#{transBean.getReportBill(trans)}" varStatus="status">
+                        <tr style="background-color: #E5E5E5">
+                            <td>#{t.transactionNumber}</td>
+                            <td>#{t.schemeTransactorName}</td>
+                            <td>#{t.schemeCardNumber}</td>
+                            <td>#{t.transactorName}</td>
+                            <td>
+                                <h:outputText value="#{t.transactionDate}">
+                                    <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                                </h:outputText>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <h:outputText value="#{t.grandTotal}">
+                                    <f:convertNumber pattern="###,###.##"/>
+                                </h:outputText>
+                            </td>
+                            <td>#{t.transactionUserDetailName}</td>
+                        </tr>
+                        <ui:repeat var="ti" value="#{transItemBean.getReportBillTransItemsSummary(t.transactionId)}">
+                            <tr>
+                                <td colspan="5"></td>
+                                <td>#{ti.categoryName}</td>
+                                <td>
+                                    <h:outputText value="#{ti.sumAmountIncVat}">
+                                        <f:convertNumber pattern="###,###.##"/>
+                                    </h:outputText>
+                                </td>
+                                <td colspan="2"></td>
+                            </tr>
+                        </ui:repeat>
+                    </ui:repeat>
+                </table>
+            </p:panel>
+        </h:form>
+    </h:body>
+</html>
+

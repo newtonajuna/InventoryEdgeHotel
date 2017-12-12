@@ -1,0 +1,317 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Payment Report</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script  language="javascript">
+            function confirmDelete()
+            {
+                return confirm('Are you sure you want to delete this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+        </script> 
+    </h:head>
+    <f:event listener="#{navigationBean.checkAccessDenied('REPORT-PAYMENTS', 'View')}" type="preRenderView" />
+    <h:body>
+        <ui:include src="Menu.xhtml"/>
+        
+        <h:form id="formReport">
+            <h:panelGrid id="id0" columns="1" styleClass="clsPanelReportFilterTitle">
+                <h:outputLabel styleClass="clsLabelReportFilterTitle" value="All Payments Report"/>
+            </h:panelGrid>
+            <h:panelGrid id="id1" columns="8" styleClass="clsPanelReportFilter">
+                <p:outputLabel styleClass="clsLabelReportFilter" id="id6" value="AddDate(From):"/>
+                <p:calendar styleClass="clsInputReportFilter" id="calAddDateFrom" pattern="dd-MM-yyyy HH:mm" navigator="true" showButtonPanel="true" readonlyInput="false" value="#{reportPay.addDate}">
+                </p:calendar>
+                <p:outputLabel styleClass="clsLabelReportFilter" id="id7" value="AddDate(To):"/>
+                <p:calendar styleClass="clsInputReportFilter" id="calAddDateTo" pattern="dd-MM-yyyy HH:mm" navigator="true" showButtonPanel="true" readonlyInput="false" value="#{reportPay.addDate2}">
+                </p:calendar>
+                <p:commandLink id="cmdbToday" value="Today's Date">
+                    <p:ajax listener="#{reportPayBean.setDateToToday(reportPay)}" process="id1" update="id1"/>
+                </p:commandLink>
+                <p:commandLink id="cmdbYesturday" value="Yesturday's Date">
+                    <p:ajax listener="#{reportPayBean.setDateToYesturday(reportPay)}" process="id1" update="id1"/>
+                </p:commandLink>
+                <p:outputLabel value="Show other dates"/>
+                <h:selectBooleanCheckbox label="Other Dates" value="#{reportPay.otherDates}">
+                    <f:ajax render="id1"/>
+                </h:selectBooleanCheckbox>
+                
+                <p:outputLabel styleClass="clsLabelReportFilter" id="id8" value="EditDate(From):" rendered="#{reportPay.otherDates}"/>
+                <p:calendar styleClass="clsInputReportFilter" id="calEditDateFrom" pattern="dd-MM-yyyy HH:mm" navigator="true" showButtonPanel="true" readonlyInput="false" value="#{reportPay.editDate}" rendered="#{reportPay.otherDates}">
+                </p:calendar>
+                <p:outputLabel styleClass="clsLabelReportFilter" id="id9" value="EditDate(To):" rendered="#{reportPay.otherDates}"/>
+                <p:calendar styleClass="clsInputReportFilter" id="calEditDateTo" pattern="dd-MM-yyyy HH:mm" navigator="true" showButtonPanel="true" readonlyInput="false" value="#{reportPay.editDate2}" rendered="#{reportPay.otherDates}">
+                </p:calendar>
+                
+                <p:outputLabel styleClass="clsLabelReportFilter" id="id10" value="PayDate(From):" rendered="#{reportPay.otherDates}"/>
+                <p:calendar styleClass="clsInputReportFilter" id="calTransDateFrom" pattern="dd-MM-yyyy" navigator="true" showButtonPanel="true" readonlyInput="false" value="#{reportPay.payDate}" rendered="#{reportPay.otherDates}">
+                </p:calendar>
+                <p:outputLabel styleClass="clsLabelReportFilter" id="id11" value="PayDate(To):" rendered="#{reportPay.otherDates}"/>
+                <p:calendar styleClass="clsInputReportFilter" id="calTransDateTo" pattern="dd-MM-yyyy" navigator="true" showButtonPanel="true" readonlyInput="false" value="#{reportPay.payDate2}" rendered="#{reportPay.otherDates}">
+                </p:calendar>
+                
+                <p:outputLabel styleClass="clsLabelReportFilter" id="id2" value="FromStore:"/>
+                <h:selectOneMenu styleClass="clsInputReportFilter" id="menuFromStore" value="#{reportPay.storeId}" >
+                    <f:selectItem itemLabel="" itemValue="0"/>
+                    <f:selectItems value="#{storeBean.stores}" var="tst" itemLabel="#{tst.storeName}" itemValue="#{tst.storeId}"/>
+                </h:selectOneMenu>
+                <h:outputLabel styleClass="clsLabelReportFilter" id="id4" value="TransType:"/>
+                <h:selectOneMenu styleClass="clsInputReportFilter" id="menuTransactionType" value="#{reportPay.transactionTypeId}">
+                    <f:selectItem itemValue="0" itemLabel=""/>
+                    <f:selectItem itemValue="2" itemLabel="SALE INVOICE"/>
+                    <f:selectItem itemValue="1" itemLabel="PURCHASE INVOICE"/>
+                    <f:ajax event="change" render="menuTransactionType"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabelReportFilter" value="PayMethod:"/>
+                <h:selectOneMenu styleClass="clsInputReportFilter" id="menuPayMethod" value="#{reportPay.payMethodId}">
+                    <f:selectItem itemLabel="" itemValue="0"/>
+                    <f:selectItems value="#{payMethodBean.payMethods}" var="pm" itemLabel="#{pm.payMethodName}" itemValue="#{pm.payMethodId}"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabelReportFilter" id="id12" value="AddUser:"/>
+                <h:selectOneMenu styleClass="clsInputReportFilter" id="menuAddUser" value="#{reportPay.addUserDetailId}">
+                     <f:selectItem itemLabel="" itemValue="0"/>
+                     <f:selectItems value="#{userDetailBean.getUserDetails()}" var="ua" itemLabel="#{ua.firstName} #{ua.secondName} #{ua.thirdName}" itemValue="#{ua.userDetailId}"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabelReportFilter" id="id13" value="EditUser:"/>
+                <h:selectOneMenu styleClass="clsInputReportFilter" id="menuEditUser" value="#{reportPay.editUserDetailId}">
+                     <f:selectItem itemLabel="" itemValue="0"/>
+                     <f:selectItems value="#{userDetailBean.getUserDetails()}" var="ue" itemLabel="#{ue.firstName} #{ue.secondName} #{ue.thirdName}" itemValue="#{ue.userDetailId}"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabelReportFilter" id="id14" value="Bill Transactor:"/>
+                <p:autoComplete styleClass="clsInputReportFilter" id="autcTransactor" value="#{transactorBean.selectedBillTransactor}" 
+                                completeMethod="#{transactorBean.getTransactorObjectList}" 
+                                var="trct" 
+                                itemLabel="#{trct.transactorNames}" 
+                                itemValue="#{trct}" 
+                                converter="TransactorConverter" style="text-align: left" 
+                                forceSelection="true" 
+                                 >
+                    <p:column headerText="Transactor Names" style="text-align: left" >  
+                    #{trct.transactorNames} 
+                    </p:column> 
+                    <p:column headerText="Type" style="text-align: left" >  
+                    #{trct.transactorType} 
+                    </p:column>
+                    <p:column headerText="Contact Person" style="text-align: left">  
+                    #{trct.cpName} 
+                    </p:column> 
+                    <p:ajax event="itemSelect" listener="#{reportPay.setBillTransactorId(transactorBean.selectedBillTransactor.transactorId)}"/>
+                    <p:ajax event="change" listener="#{reportPay.setBillTransactorId(transactorBean.selectedBillTransactor.transactorId)}" rendered="#{transactorBean.selectedBillTransactor!=null} "/>
+                </p:autoComplete>
+                
+                <h:outputLabel styleClass="clsLabelReportFilter" value="TransId:"/>
+                <h:inputText styleClass="clsInputReportFilter" id="itxtTransactionId" value="#{reportPay.transactionId}"/>
+                
+                <h:outputLabel style="float: right;" value="PayId:"/>
+                <h:inputText styleClass="clsInputReportFilter" id="itxtPayId" value="#{reportPay.payId}"/>
+                
+                <h:outputLabel styleClass="clsLabelReportFilter" id="id33" value="Summarise By:"/>
+                <h:selectOneMenu styleClass="clsInputReportFilter" id="menuSummariseBy" value="#{reportPaySummary.fieldName}">
+                     <f:selectItem itemLabel="" itemValue=""/>
+                     <f:selectItem itemLabel="AddUser" itemValue="add_user_detail_id"/>
+                     <f:selectItem itemLabel="EditUser" itemValue="edit_user_detail_id"/>
+                     <f:selectItem itemLabel="BillTransactor" itemValue="bill_transactor_id"/>
+                     <f:selectItem itemLabel="Store" itemValue="store_id"/>
+                     <f:selectItem itemLabel="PayMethod" itemValue="pay_method_id"/>
+                </h:selectOneMenu>
+                
+                <p:commandButton styleClass="clsButtonReportFilter" id="cmdbSearch" value="Search" update="tblReportPay tblReportPaySummary pnlgActionMessage cashion" />
+            </h:panelGrid>
+            <h:panelGrid id="pnlgActionMessage">
+                <p:outputLabel value="#{reportPayBean.actionMessage}" style="color: red;"/>
+            </h:panelGrid>
+            
+            <p:dataTable tableStyle="width:auto;" id="tblReportPaySummary" var="rtss" value="#{reportPayBean.getActiveReportPaySummary(reportPay,reportPaySummary)}" 
+                         >
+                    <f:facet name="header">
+                        Payment Summary Report
+                    </f:facet>
+                
+                <p:column headerText="Store">
+                    <h:outputText value="#{storeBean.getStore(rtss.storeId).storeName}">
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Transaction">
+                    <h:outputText value="#{transactionTypeBean.getTransactionType(rtss.transactionTypeId).transactionTypeName}">
+                    </h:outputText>
+                </p:column>
+                 
+                    <p:column headerText="FieldName">
+                        <h:outputText value="#{rtss.fieldName}">
+                        </h:outputText>
+                    </p:column>
+                    
+                    <p:column headerText="PaidAmount">
+                        <h:outputText value="#{rtss.sumPaidAmount}">
+                            <f:convertNumber pattern="###,###.##"/>
+                        </h:outputText>
+                    </p:column>
+                
+                    <p:column headerText="PointsSpentAmount">
+                        <h:outputText value="#{rtss.sumPointsSpentAmount}">
+                            <f:convertNumber pattern="###,###.##"/>
+                        </h:outputText>
+                    </p:column>
+             </p:dataTable>
+            <h:panelGrid id="cashion" columns="6">
+                <h:outputLabel value="Cash-IN:"/>
+                <h:inputText value="#{reportPaySummary.cashIn}" disabled="true">
+                    <f:convertNumber pattern="###,###.##"/>
+                </h:inputText>
+                <h:outputLabel value="Cash-OUT:"/>
+                <h:inputText value="#{reportPaySummary.cashOut}" disabled="true">
+                    <f:convertNumber pattern="###,###.##"/>
+                </h:inputText>
+                <h:outputLabel value="NET-Cash:"/>
+                <h:inputText value="#{reportPaySummary.cashNet}" disabled="true">
+                    <f:convertNumber pattern="###,###.##"/>
+                </h:inputText>
+            </h:panelGrid>
+            
+            <h:panelGrid id="id16" columns="1" style="margin-top: 20px;">
+                <p:panel header="Export Payment Summary Report">
+                    <h:commandLink>
+                        <p:commandButton icon="ui-icon-circle-arrow-s" value="Excel"/>
+                        <p:dataExporter type="xls" target="tblReportPaySummary" fileName="ReportPaymentSummary" />
+                    </h:commandLink>
+
+                    <h:commandLink>
+			<p:commandButton icon="ui-icon-circle-arrow-s" value="PDF"/>
+			<p:dataExporter type="pdf" target="tblReportPaySummary" fileName="ReportPaymentSummary"/>
+                    </h:commandLink>
+		
+                    <h:commandLink>
+			<p:commandButton icon="ui-icon-circle-arrow-s" value="CSV"/>
+			<p:dataExporter type="csv" target="tblReportPaySummary" fileName="ReportPaymentSummary" />
+                    </h:commandLink>
+		
+                    <h:commandLink>
+			<p:commandButton icon="ui-icon-circle-arrow-s" value="XML"/>
+			<p:dataExporter type="xml" target="tblReportPaySummary" fileName="ReportPaymentSummary" />
+                    </h:commandLink>
+                </p:panel>
+             </h:panelGrid>
+            
+            
+            <p:dataTable tableStyle="width:auto;" id="tblReportPay" var="rts" value="#{reportPayBean.getActiveReportPay(reportPay)}" 
+                          paginator="true" rows="10" 
+                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}" 
+                         rowsPerPageTemplate="10,20,50,100,200,500">
+                    <f:facet name="header">
+                        Payment Report (#{reportPayBean.getActiveReportPayCount()} Items Returned)
+                        <p:commandButton id="toggler" type="button" value="Columns" icon="ui-icon-calculator" />
+                        <p:columnToggler datasource="tblReportPay" trigger="toggler" />
+                    </f:facet>
+                    
+                    <p:column headerText="Store">
+                        <h:outputText value="#{rts.storeName}">
+                        </h:outputText>
+                    </p:column>
+                
+                    <p:column headerText="TransId">
+                        <h:outputText value="#{rts.transactionId}">
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="PayId">
+                        <h:outputText value="#{rts.payId}">
+                        </h:outputText>
+                    </p:column>
+                
+                    <p:column headerText="TransType">
+                        <h:outputText value="#{rts.transactionTypeName}">
+                        </h:outputText>
+                    </p:column>
+                
+                    <p:column headerText="PayDate">
+                        <h:outputText value="#{rts.payDate}">
+                            <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                        </h:outputText>
+                    </p:column>
+                    
+                    <p:column headerText="AddDate">
+                        <h:outputText value="#{rts.addDate}">
+                            <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                        </h:outputText>
+                    </p:column>
+                    
+                    <p:column headerText="PayMethod">
+                        <h:outputText value="#{rts.payMethodName}">
+                        </h:outputText>
+                    </p:column>
+                
+                    <p:column headerText="PaidAmount">
+                        <h:outputText value="#{rts.paidAmount}">
+                            <f:convertNumber pattern="###,###"/>
+                        </h:outputText>
+                    </p:column>
+                
+                    <p:column headerText="PointsSpentAmount">
+                        <h:outputText value="#{rts.pointsSpentAmount}">
+                            <f:convertNumber pattern="###,###.##"/>
+                        </h:outputText>
+                    </p:column>
+                    
+                    <p:column headerText="BillTransactor">
+                        <h:outputText value="#{rts.billTransactorNames}"> 
+                        </h:outputText>
+                    </p:column>
+                
+                    <p:column headerText="AddUser">
+                        <h:outputText value="#{rts.addUserNames}"> 
+                        </h:outputText>
+                    </p:column>
+                
+                    <p:column headerText="EditUser">
+                        <h:outputText value="#{rts.editUserNames}">
+                            <f:convertNumber pattern="###,###.##"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="EditDate">
+                        <h:outputText value="#{rts.editDate}">
+                            <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                        </h:outputText>
+                    </p:column>
+                    
+             </p:dataTable>
+            
+            <h:panelGrid id="id15" columns="1" style="margin-top: 20px;">
+                <p:panel header="Export Payment Report">
+                    <h:commandLink>
+                        <p:commandButton icon="ui-icon-circle-arrow-s" value="Excel"/>
+                        <p:dataExporter type="xls" target="tblReportPay" fileName="ReportPay" />
+                    </h:commandLink>
+
+                    <h:commandLink>
+			<p:commandButton icon="ui-icon-circle-arrow-s" value="PDF"/>
+			<p:dataExporter type="pdf" target="tblReportPay" fileName="ReportPay"/>
+                    </h:commandLink>
+		
+                    <h:commandLink>
+			<p:commandButton icon="ui-icon-circle-arrow-s" value="CSV"/>
+			<p:dataExporter type="csv" target="tblReportPay" fileName="ReportPay" />
+                    </h:commandLink>
+		
+                    <h:commandLink>
+			<p:commandButton icon="ui-icon-circle-arrow-s" value="XML"/>
+			<p:dataExporter type="xml" target="tblReportPay" fileName="ReportPay" />
+                    </h:commandLink>
+                </p:panel>
+             </h:panelGrid>
+             
+        </h:form>
+    </h:body>
+</html>
+

@@ -1,0 +1,308 @@
+
+*{
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 12px;
+}
+tr {
+    display: table-row;
+    vertical-align:top;
+    border-color: inherit;
+}
+.cls-table{   
+    border-collapse:collapse;
+    margin-left: 5px;
+    margin-bottom: 10px;
+    padding-right: 5px;
+}
+
+.cls-table-header{
+    text-align:left;
+    background:none repeat scroll 0 0 #E5E5E5;
+    border:1px solid black;
+    color:black;
+    font-weight: bold;
+    padding-right: 5px;
+}
+
+.cls-table-odd-row{
+    text-align:left;
+    background:none repeat scroll 0 0 #FFFFFF;
+    border:1px solid #BBBBBB;
+    padding-right: 5px;
+}
+
+.cls-table-even-row{
+    text-align:left;
+    background:none repeat scroll 0 0 #F9F9F9;
+    border:1px solid #BBBBBB;
+    padding-right: 5px;
+}
+.cls-table-col1{
+    border: 1px solid;
+    padding-right: 5px;
+}
+.cls-table-col2{
+    border: 1px solid;
+    padding-right: 5px;
+}
+.cls-table-col3{
+    border: 1px solid;
+    padding-right: 5px;
+}
+.cls-table-col4{
+    border: 1px solid;
+    padding-right: 5px;
+}
+.cls-table-col5{
+    border: 1px solid;
+    padding-right: 5px;
+}
+.cls-table-col6{
+    border: 1px solid;
+    padding-right: 5px;
+}
+.cls-table-col7{
+    border: 1px solid;
+    padding-right: 5px;
+}
+.cls-table-col8{
+    border: 1px solid;
+    padding-right: 5px;
+}
+.cls-table-col9{
+    border: 1px solid;
+    padding-right: 5px;
+}
+.cls-table-col10{
+    border: 1px solid;
+    padding-right: 5px;
+}
+.clsActionMessage{
+    color: green;
+}
+.clsMainFrom{
+    border: 5px solid;
+    width: 900px;
+}
+.clsMainFromRoom{
+    border: 5px solid;
+    width: 900px;
+}
+.clsLikeMainFromWidth{
+    width: 900px;
+}
+#TransactionForm{
+    width: 1100px;
+}
+.clsGridApprove{
+    width: 1100px;
+}
+.clsGridMainHeaderRoom{
+    width: 900px;
+    background-color: black;
+}
+.clsGridMainHeader{
+    width: 900px;
+    background-color: black;
+}
+.clsLabelTop{
+    color: white;
+    font-weight: bold;
+}
+.clsGridMainCommands{
+    width: 900px;
+    background-color: black;
+}
+.clsGridMainCommands1{
+    width: 395px;
+    background-color: black;
+}
+.clsGridMainCommands2{
+    width: 395px;
+    background-color: black;
+}
+.clsButton{
+    width: 100px;
+}
+.clsButtonBigLonger{
+    width: 400px;
+    height:60px;
+    font-size: 20px; 
+}
+.clsButtonBig{
+    width: 200px;
+    height:60px;
+    font-size: 20px; 
+}
+.clsButtonVeryBig{
+    width: 350px;
+    height:50px;
+    font-size: 20px; 
+}
+.clsButtonMedium{
+    width: 210px;
+    height:40px;
+    font-size: 20px; 
+}
+#dtblTransactorA{
+    position:fixed;
+    left: 0px;
+    top: 0px;
+    z-index: -100;
+}
+.clsSuccessStatus{
+    color: green;
+}
+.clsFailStatus{
+    color: red;
+}
+
+.cls-table-SalesInvoice{   
+    border-collapse: collapse;
+    margin-left: 0px;
+    margin-bottom: 0px;
+    padding-right: 0px;
+    border-style:solid;
+    border-width:1px;
+    width: 350px;
+}
+.cls-table-SalesInvoice-very-small{   
+    border-collapse: collapse;
+    margin-left: 0px;
+    margin-bottom: 0px;
+    padding-right: 0px;
+    border-style:solid;
+    border-width:1px;
+    width: 290px;
+}
+
+.cls-table-header-SalesInvoice{
+    text-align:left;
+    border:1px solid black;
+    color:black;
+    font-weight: bold;
+    padding-right: 0px;
+    border-style: dotted;
+}
+
+.cls-table-odd-row-SalesInvoice{
+    text-align:left;
+    border:1px solid #BBBBBB;
+    padding-right: 0px;
+    border-style: dotted;
+}
+
+.cls-table-even-row-SalesInvoice{
+    text-align:left;
+    border:1px solid #BBBBBB;
+    padding-right: 0px;
+    border-style: dotted;
+}
+.cls-table-col1-SalesInvoice{
+    border: 1px solid;
+    padding-right: 0px;
+    border-style: dotted;
+    font-size: 12px;
+}
+.cls-table-col2-SalesInvoice{
+    border: 1px solid;
+    padding-right: 0px;
+    border-style: dotted;
+    font-size: 10px;
+}
+.cls-table-col3-SalesInvoice{
+    border: 1px solid;
+    padding-right: 0px;
+    border-style: dotted;
+}
+.cls-table-col4-SalesInvoice{
+    border: 1px solid;
+    padding-right: 0px;
+    border-style: dotted;
+}
+.cls-table-col5-SalesInvoice{
+    border: 1px solid;
+    padding-right: 0px;
+    border-style: dotted;
+}
+.clsPanelReportFilter{
+    width: 100%;
+    background-color: bisque
+}
+.clsPanelReportFilterTitle{
+    width: 100%;
+    text-align: center;
+    background-color: black;
+}
+.clsLabelReportFilter{
+    float: right;
+}
+.clsLabelReportFilterTitle{
+    color: white;
+}
+.clsInputReportFilter{
+    float: left;
+}
+.clsButtonReportFilter{
+    text-align: center;
+}
+#grd_rooming_list td, #grd_rooming_list th, #grd_rooming_list{
+    border: 1px solid;
+    font-size: 10px !important;
+        padding: 0 5px !important;
+}
+#grd_rooming_list table{
+    border-collapse: collapse;
+    width: 100%;
+}
+#pnl_rooming_list td, #pnl_rooming_list th, #pnl_rooming_list{
+    border: 1px solid;
+    font-size: 10px !important;
+        padding: 0 5px !important;
+}
+#pnl_rooming_list table{
+    border-collapse: collapse;
+}
+
+table.t1 {
+    margin: 1em auto;
+    border-collapse: collapse;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  .t1 th, .t1 td {
+    padding: 4px 8px;
+  }
+  .t1 thead th {
+    background: #4f81bd;
+    /*text-transform: lowercase;*/
+    text-align: left;
+    font-size: 15px;
+    color: #fff;
+  }
+  .t1 tr {
+    border-right: 1px solid #95b3d7;
+  }
+  .t1 tbody tr {
+    border-bottom: 1px solid #95b3d7;
+  }
+  .t1 tbody tr:nth-child(odd) {
+    background: #dbe5f0;
+  }
+  .t1 tbody th, .t1 tbody tr:nth-child(even) td {
+    border-right: 1px solid #95b3d7;
+  }
+  .t1 tfoot th {
+    background: #4f81bd;
+    text-align: left;
+    font-weight: normal;
+    font-size: 10px;
+    color: #fff;
+  }
+  .t1 tr *:nth-child(3), .t1 tr *:nth-child(4) {
+    text-align: right;
+  }
+
+  
+/*  #GFDlg{
+      height: 500px;
+  }*/

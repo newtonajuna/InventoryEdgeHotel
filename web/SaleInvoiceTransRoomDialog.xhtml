@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <ui:composition>
+        <p:dialog id="SaleInvoiceTransRoomDlg" widgetVar="SaleInvoiceTransRoomDialog" modal="true" resizable="false"  appendTo="@(body)" header="SaleInvoiceTransRoom Dialog">
+            <h:form id="saleinvoicetransform" styleClass="clsMainFrom" onkeypress="if (event.keyCode == 13)
+                        return false;">
+                <h:panelGrid styleClass="clsGridMainHeader" columns="1">
+                    <h:outputLabel styleClass="clsLabelTop" id="olblTransactorHeader" value="Extend Stay for - #{transExtendStay.guest}"/>
+                </h:panelGrid>
+                <h:panelGrid columns="4">
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 250px" value="Room"/>
+                    <h:inputText value="#{transExtendStay.roomNumber}" readonly="true" styleClass="clsInputTransItem"/>
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 250px" value="Rate"/>
+                    <h:inputText value="#{transExtendStay.rate}" readonly="true" styleClass="clsInputTransItem"/>
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 250px" value="Date Of Arrival"/>
+                    <h:inputText value="#{transExtendStay.startDate}" readonly="true" styleClass="clsInputTransItem">
+                        <f:convertDateTime pattern="dd-MM-yyyy" timeZone="EAT"/>
+                    </h:inputText>
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 250px" value="Prev. Date Of Departure"/>
+                    <h:inputText value="#{transExtendStay.prev_EndDate}" readonly="true" styleClass="clsInputTransItem">
+                        <f:convertDateTime pattern="dd-MM-yyyy" timeZone="EAT"/>
+                    </h:inputText>
+                    <h:outputLabel styleClass="clsLabel" value="#{transactionTypeBean.getTransactionType(2).transactionDateLabel}:"/>
+                    <p:calendar styleClass="clsInput" id="calTransactionDate" pattern="dd-MM-yyyy" navigator="true" showButtonPanel="true" readonlyInput="true" size="12" value="#{transExtendStay.transactionDate}">
+                    </p:calendar>
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 250px" value="New Date Of Departure"/>
+                    <p:calendar styleClass="clsInput" id="calEndDate" pattern="dd-MM-yyyy" navigator="true" showButtonPanel="true" readonlyInput="true" size="12" value="#{transExtendStay.endDate}" required="true">
+                        <p:ajax listener="#{transExtendStay.compute_extra_days()}" event="dateSelect" update="txtExtraDays"/>
+                    </p:calendar>   
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 250px" value="Extra Days"/>
+                    <h:inputText id="txtExtraDays" value="#{transExtendStay.extraDays}" readonly="true" styleClass="clsInputTransItem"/>
+                    <p:commandButton value="Extend Stay" update=":formReport,@form" action="#{transExtendStay.extend_stay()}">
+                        <p:confirm header="Confirmation" message="Are you sure you want to extend stay?" icon="ui-icon-alert" />
+                    </p:commandButton>
+                    <p:commandButton value="Cancel" process="@this" oncomplete="PF('SaleInvoiceTransRoomDialog').hide();"></p:commandButton>
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                    </p:confirmDialog>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>
+

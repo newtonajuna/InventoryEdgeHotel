@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Group Detail</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script  language="javascript">
+            function confirmDelete()
+            {
+                return confirm('Are you sure you want to delete this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+        </script> 
+    </h:head>
+    <f:event listener="#{navigationBean.checkAccessDenied('SETTING', 'View')}" type="preRenderView" />
+    <h:body>
+        <ui:include src="Menu.xhtml"/>
+        <h:form id="form" styleClass="clsMainFrom">
+
+            <h:panelGrid styleClass="clsGridMainHeader" columns="1">
+                <h:outputLabel styleClass="clsLabelTop" id="olblbranchHeader" value="Group Detail"/>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainInput" columns="4">
+                <h:outputLabel styleClass="clsLabel" value="Group Name:"/>
+                <h:inputText styleClass="clsInput" id="itxtGroupName" value="#{groupDetail.groupName}" autocomplete="off">  
+                </h:inputText>
+                <h:outputLabel styleClass="clsLabel" value="Is Active?:"/>
+                <h:selectOneMenu styleClass="clsMenu" id="menuIsActive" value="#{groupDetail.isActive}">
+                    <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                    <f:selectItem itemLabel="No" itemValue="No"/>
+                </h:selectOneMenu>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainCommands" columns="2">
+            <h:panelGrid styleClass="clsGridMainCommands1" columns="4">
+                <h:commandButton styleClass="clsButton" id="cmdbSave" value="Save">
+                    <f:actionListener binding="#{groupDetailBean.saveGroupDetail(groupDetail)}" />
+                    <f:actionListener binding="#{groupDetailBean.clearGroupDetail(groupDetail)}" />
+                </h:commandButton>
+                <h:commandButton styleClass="clsButton" id="cmdbClear" value="Clear">
+                    <f:actionListener binding="#{groupDetailBean.clearGroupDetail(groupDetail)}" />
+                </h:commandButton>
+                <h:commandButton styleClass="clsButton" id="cmdbDelete" value="Delete" onclick="return confirmDelete();">
+                    <f:actionListener binding="#{groupDetailBean.deleteGroupDetail(groupDetail)}" />
+                    <f:actionListener binding="#{groupDetailBean.clearGroupDetail(groupDetail)}" />
+                </h:commandButton>
+            </h:panelGrid>
+            <h:panelGrid styleClass="clsGridMainCommands2" columns="4">
+            </h:panelGrid>
+
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainMessages" columns="1">
+                <h:outputLabel styleClass="clsActionMessage" id="olblActionMessage" value="#{groupDetailBean.actionMessage}"/>
+                <h:messages id="msgsMainMessage" style="color: red"/><br/>
+            </h:panelGrid>
+
+            <h:dataTable id="dtblGroupDetail" value="#{groupDetailBean.groupDetails}" var="g" 
+                         styleClass="cls-table" 
+                         headerClass="cls-table-header" 
+                         rowClasses="cls-table-odd-row,cls-table-even-row" 
+                         columnClasses="cls-table-col1,cls-table-col2"
+                         > 
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header"> Group Name </f:facet>
+                    <!-- row record -->
+                    #{g.groupName}
+                </h:column>
+
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header"> Is Active </f:facet>
+                    <!-- row record -->
+                    #{g.isActive}
+                </h:column>
+
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">Action</f:facet>
+                    <!-- row record -->
+                    <h:commandLink value="Edit" action="#{groupDetailBean.displayGroupDetail(g,groupDetail)}" />
+                    &nbsp;
+                </h:column>
+                
+            </h:dataTable>
+
+        </h:form>
+    </h:body>
+</html>
+

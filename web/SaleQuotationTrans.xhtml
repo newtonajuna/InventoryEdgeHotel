@@ -1,0 +1,348 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Sales Quotation</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script  language="javascript">
+            function confirmDelete()
+            {
+                return confirm('Are you sure you want to delete this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+            function doPrintHiddenClick() {
+                document.getElementById("TransactionFormSales:cmdbPrint").click();
+            }
+        </script> 
+    </h:head>
+    <f:event listener="#{navigationBean.checkAccessDenied('SALE QUOTATION', 'View')}" type="preRenderView" />
+    <f:event listener="#{navigationBean.checkLicenseExpired()}" type="preRenderView" />
+    <f:event listener="#{navigationBean.checkCurrentPage('SALE QUOTATION','','')}" type="preRenderView" />
+    <f:event listener="#{transBean.initClearAll2(trans,transItemBean.activeTransItems,transItem,itemBean.selectedItem,transactorBean.selectedTransactor,2,transactorBean.selectedBillTransactor,userDetailBean.selectedUserDetail,transactorBean.selectedSchemeTransactor)}" type="preRenderView" />
+    <f:event listener="#{statusBean.initClearStatus()}" type="preRenderView" />
+
+    <h:body>
+        <ui:include src="Menu.xhtml"/>
+        <h:form id="TransactionFormSales" styleClass="clsMainFrom" onkeypress="if (event.keyCode == 13)
+                        return false;">  
+            <h:panelGrid styleClass="clsGridMainHeader" columns="4">
+                <h:outputLabel styleClass="clsLabelTop" id="olblTransactionHeader" value="#{generalUserSetting.getCurrentSaleType()}"/>
+                <h:outputLabel style="background-color:black;color: lightsalmon;" value="Prices for vatable items are VAT inclusive:#{companySetting.EIsVatInclusive}"/>
+                <h:outputLabel style="background-color:black;color: lightsalmon;" value="Stock:No effect"/>
+                <h:outputLabel style="background-color:black;color:lightsalmon;" value="Ledger:No effect"/>
+            </h:panelGrid>
+            <h:panelGrid id="pnlHeader" styleClass="clsGridMainInput" columns="6">
+                <h:outputLabel styleClass="clsLabel" value="Trans.Reason:"/>
+                <h:selectOneMenu styleClass="clsMenu" id="menuTransactionReason" value="#{trans.transactionReasonId}">
+                    <f:selectItem itemValue="#{generalUserSetting.getCurrentTransactionReasonId()}" itemLabel="#{transactionReasonBean.getTransactionReason(generalUserSetting.getCurrentTransactionReasonId()).transactionReasonName}"/>
+                </h:selectOneMenu>
+                <h:outputLabel styleClass="clsLabel" value="From.Store:"/>
+                <h:inputText styleClass="clsInput" id="itxtFromStore" disabled="true" value="#{generalUserSetting.getCurrentStore().getStoreName()}">
+                </h:inputText>
+                <h:outputLabel styleClass="clsLabel" value="#{transactionTypeBean.getTransactionType(10).transactionDateLabel}:"/>
+                <p:calendar styleClass="clsInput" id="calTransactionDate" pattern="dd-MM-yyyy" navigator="true" showButtonPanel="true" readonlyInput="true" value="#{trans.transactionDate}" />
+
+                <h:outputLabel styleClass="clsLabel" value="#{transactionTypeBean.getTransactionType(10).transactionRefLabel}:"/>
+                <h:inputText styleClass="clsInput" id="itxtTransactionRef" value="#{trans.transactionRef}" autocomplete="off">
+                </h:inputText>
+                <h:outputLabel styleClass="clsLabel" value="#{transactionTypeBean.getTransactionType(10).transactorLabel}:"/>
+                <p:autoComplete id="autcTransactor" value="#{transactorBean.selectedTransactor}" 
+                                completeMethod="#{transactorBean.getTransactorObjectList}" 
+                                var="trct" 
+                                itemLabel="#{trct.transactorNames}" 
+                                itemValue="#{trct}" 
+                                converter="TransactorConverter" style="text-align: left" 
+                                forceSelection="true" queryDelay="0" 
+                                >
+                    <p:column headerText="Transactor Names" style="text-align: left" >  
+                        #{trct.transactorNames} 
+                    </p:column> 
+                    <p:column headerText="Type" style="text-align: left" >  
+                        #{trct.transactorType} 
+                    </p:column> 
+                    <p:column headerText="Contact Person" style="text-align: left">  
+                        #{trct.cpName} 
+                    </p:column> 
+                    <p:ajax event="itemSelect" listener="#{trans.setTransactorId(transactorBean.selectedTransactor.transactorId)}"/>
+                    <p:ajax event="change" listener="#{trans.setTransactorId(transactorBean.selectedTransactor.transactorId)}" rendered="#{transactorBean.selectedTransactor!=null}"/>
+                    <p:ajax event="blur" update="olblDebtCredit itxtDebtCredit"/>
+                </p:autoComplete>
+                <h:outputLabel id="olblDebtCredit" style="color: coral;font-weight: bold;" styleClass="clsLabel" value="#{transactorLedgerBean.getCurrentTransactorLedgerByIndividual(trans.transactorId).netDebtCreditLabel}:"/>
+                <h:inputText disabled="true" style="color: coral;font-weight: bold;" styleClass="clsInput" id="itxtDebtCredit" value="#{transactorLedgerBean.getCurrentTransactorLedgerByIndividual(trans.transactorId).netDebtCreditAmount}">
+                    <f:convertNumber pattern="###,###.##"/>
+                </h:inputText>
+            </h:panelGrid>
+            <h:panelGrid id="gridTransItem" styleClass="clsGridMainInput" columns="6">
+                <h:outputLabel styleClass="clsLabelTransItem" style="width: 250px" value="ItemDescription"/>
+                <h:outputLabel styleClass="clsLabelTransItem" style="width: 50px" value="Unit"/>
+                <h:outputLabel styleClass="clsLabelTransItem" style="width: 50px" value="Qty"/>
+                <h:outputLabel styleClass="clsLabelTransItem" style="width: 100px" value="UnitPrice"/>
+                <h:outputLabel styleClass="clsLabelTransItem" style="width: 100px" value="Amount"/>
+                <h:outputLabel styleClass="clsLabelTransItem" style="width: 100px" value="OverridePrices?"/>
+
+                <p:autoComplete id="autcItem" widgetVar="WautcItem" value="#{itemBean.selectedItem}"  
+                                completeMethod="#{itemBean.getItemObjectListActive}" 
+                                var="itm" 
+                                itemLabel="#{itm.description}" 
+                                itemValue="#{itm}" 
+                                converter="ItemConverter" style="text-align: left" 
+                                forceSelection="true" queryDelay="0" 
+                                onkeypress="if (event.keyCode == 13)
+                                                return false;" >
+                    <p:column headerText="Item Description" style="text-align: left" >  
+                        #{itm.description} 
+                    </p:column>
+                    <p:column headerText="Item Code" style="text-align: left" >  
+                        #{itm.itemCode} 
+                    </p:column>
+                    <p:column headerText="Unit" style="text-align: left">  
+                        #{unitBean.getUnit(itm.unitId).unitSymbol}
+                    </p:column> 
+                    <p:column headerText="Category" style="text-align: left">  
+                        #{categoryBean.getCategory(itm.categoryId).categoryName}
+                    </p:column>
+                    <p:column headerText="Cost Price" style="text-align: left">  
+                        <h:outputText value="#{itm.unitCostPrice}">
+                            <f:convertNumber pattern="###,###.##"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Retailsale Price" style="text-align: left">  
+                        <h:outputText value="#{itm.unitRetailsalePrice}">
+                            <f:convertNumber pattern="###,###.##"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Wholesale Price" style="text-align: left">
+                        <h:outputText value="#{itm.unitWholesalePrice}">
+                            <f:convertNumber pattern="###,###.##"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="VAT Rated" style="text-align: left">
+                        <h:outputText value="#{itm.vatRated}">
+                        </h:outputText>
+                    </p:column>
+                    <p:ajax event="itemSelect" listener="#{transItemBean.updateModelTransItem(trans,transItem,statusBean,transItemBean.activeTransItems,itemBean.selectedItem,0)}" process="@this" update="itxtUnit,itxtUnitPrice,itxtQty,itxtAmount,gridItemStatus,pgrdOverride"/>
+                    <p:ajax event="change" listener="#{transItemBean.updateModelTransItem(trans,transItem,statusBean,transItemBean.activeTransItems,itemBean.selectedItem,0)}" rendered="#{itemBean.selectedItem!=null}" process="@this" update="itxtUnit,itxtUnitPrice,itxtQty,itxtAmount,gridItemStatus,pgrdOverride"/>
+                </p:autoComplete>
+                <h:inputText id="itxtUnit" styleClass="clsInputTransItem" value="#{unitBean.getUnit(itemBean.getItem(transItem.itemId).getUnitId()).unitSymbol}" style="width: 50px" disabled="true"/>
+                <h:inputText id="itxtQty" styleClass="clsInputTransItem" style="width: 50px" value="#{transItem.itemQty}" autocomplete="off">
+                    <f:ajax event="change" listener="#{transItem.setAmount(transItem.itemQty*transItem.unitPrice)}" render="itxtAmount"/>
+                    <f:ajax event="keyup" listener="#{transItem.setAmount(transItem.itemQty*transItem.unitPrice)}" render="itxtAmount"/>
+                    <f:convertNumber pattern="###,###.##"/>
+                </h:inputText>
+                <h:inputText id="itxtUnitPrice" styleClass="clsInputTransItem" style="width: 100px" disabled="true" value="#{transItem.unitPrice}">
+                    <f:convertNumber pattern="###,###.##"/>
+                </h:inputText>             
+                <h:inputText id="itxtAmount" styleClass="clsInputTransItem" style="width: 100px" disabled="true" value="#{transItem.amount}">
+                    <f:convertNumber pattern="###,###.##"/>
+                </h:inputText>
+                <h:selectBooleanCheckbox label="Override Prices" value="#{transItem.overridePrices}" disabled="#{transBean.isDisableOverridePrices(generalUserSetting.getCurrentUser(),generalUserSetting.getCurrentGroupRights())}">
+                    <f:ajax render="pgrdOverride"/>
+                </h:selectBooleanCheckbox>
+            </h:panelGrid>
+            <h:panelGrid id="pgrdOverride">
+                <h:panelGrid id="pgrdOverride2" columns="3" rendered="#{transItem.overridePrices}">
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value="UnitPrice(New)"/>
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value="TradeDisc(New)"/>
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value="VATRated(New)"/>
+
+                    <h:inputText id="itxtUnitPrice2" styleClass="clsInputTransItem" style="width: 150px" disabled="false" value="#{transItem.unitPrice2}"/>
+                    <h:inputText id="itxtTradeDisc2" styleClass="clsInputTransItem" style="width: 150px" disabled="false" value="#{transItem.unitTradeDiscount2}"/>
+                    <h:selectOneMenu styleClass="clsMenu" style="width: 150px" id="menuVatRated2" value="#{transItem.vatRated2}">
+                        <f:selectItem itemLabel="STANDARD" itemValue="STANDARD"/>
+                        <f:selectItem itemLabel="ZERO" itemValue="ZERO"/>
+                        <f:selectItem itemLabel="EXEMPT" itemValue="EXEMPT"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+            </h:panelGrid>
+            <h:panelGrid id="pgrdItemCommands" columns="2">
+                <h:commandButton styleClass="clsButtonMedium" value="Add Item (ALT+A)" accesskey="a">
+                    <f:ajax listener="#{transItemBean.addTransItemSaleQuotation(trans,statusBean,transItemBean.activeTransItems,transItem,itemBean.selectedItem)}" execute="@form" render="@form"/>
+                </h:commandButton>
+                <h:commandButton styleClass="clsButtonMedium" value="Clear Item (ALT+R)" accesskey="r">
+                    <f:ajax listener="#{transBean.clearAll(trans,transItemBean.activeTransItems,transItem,itemBean.selectedItem,transactorBean.selectedTransactor,1)}" execute="@form" render="@form"/>
+                </h:commandButton>
+            </h:panelGrid>
+
+            <h:panelGrid id="gridItemStatus" styleClass="clsGridItemStatus" columns="1">
+                <h:outputLabel id="olblItemAddedStstus" class="clsSuccessStatus" value="#{statusBean.itemAddedStatus}" rendered="#{statusBean.showItemAddedStatus==1}"/>
+                <h:outputLabel id="olblItemNotAddedStstus" class="clsFailStatus" value="#{statusBean.itemNotAddedStatus}" rendered="#{statusBean.showItemNotAddedStatus==1}"/>
+            </h:panelGrid>
+
+            <p:dataTable rowIndexVar="rowIndex" id="dtblTransactionItem" value="#{transItemBean.activeTransItems}" var="ati" 
+                         styleClass="cls-table" tableStyle="width:auto;" 
+                         >  
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">#</f:facet>
+                    <!-- row record -->
+                    #{rowIndex+1}
+                </p:column>
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Item Description</f:facet>
+                    <!-- row record -->
+                    #{itemBean.getItem(ati.itemId).description}
+                </p:column>
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Unit</f:facet>
+                    <!-- row record -->
+                    #{unitBean.getUnit(itemBean.getItem(ati.itemId).getUnitId()).unitSymbol}
+                </p:column>
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Qty</f:facet>
+                    <!-- row record -->
+                    <h:inputText value="#{ati.itemQty}" style="width: 50px;">
+                        <f:convertNumber pattern="###,###.##"/>
+                        <f:ajax event="change" listener="#{transItemBean.editTransItem(10,trans, transItemBean.activeTransItems,ati)}" execute="dtblTransactionItem" render="@form"/>
+                    </h:inputText>
+                </p:column>
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Unit Price</f:facet>
+                    <!-- row record -->
+                    <h:outputLabel value="#{ati.unitPriceExcVat}">
+                        <f:convertNumber pattern="###,###.##"/>
+                    </h:outputLabel>
+                </p:column>
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Unit VAT</f:facet>
+                    <!-- row record -->
+                    <h:outputLabel value="#{ati.unitVat}">
+                        <f:convertNumber pattern="###,###.##"/>
+                    </h:outputLabel>
+                </p:column>
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Unit Trade.Disc</f:facet>
+                    <!-- row record -->
+                    <h:outputLabel value="#{ati.unitTradeDiscount}">
+                        <f:convertNumber pattern="###,###.##"/>
+                    </h:outputLabel>
+                </p:column>
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Amount</f:facet>
+                    <!-- row record -->
+                    <h:outputLabel value="#{ati.amountIncVat}">
+                        <f:convertNumber pattern="###,###.##"/>
+                    </h:outputLabel>
+                </p:column>
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Action</f:facet>
+                    <!-- row record -->
+                    <h:commandButton id="cmdbRemoveItem" value="-">
+                        <f:ajax listener="#{transItemBean.removeTransItem(trans,transItemBean.activeTransItems,ati)}" execute="@form" render="@form"/>
+                    </h:commandButton>
+                </p:column> 
+            </p:dataTable>
+
+            <h:panelGrid id="pgrdTotals" styleClass="clsGridMainInput" columns="5">
+                <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value="Sub.Total"/>
+                <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value="Total.Trade.Disc"/>
+                <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value="Total.VAT"/>
+                <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value="Cash.Disc"/>
+                <h:outputLabel styleClass="clsLabelTransItem" style="width: 180px" value="GRAND.TOTAL(#{companySetting.getCurrencyUsed()})"/>
+
+                <h:inputText id="itxtSubTotal" value="#{trans.subTotal}" styleClass="clsInputTransItem" style="width: 150px" disabled="true">
+                    <f:convertNumber pattern="###,###.##"/>
+                </h:inputText>
+                <h:inputText id="itxtTotalTradeDiscount" value="#{trans.totalTradeDiscount}" styleClass="clsInputTransItem" style="width: 150px" autocomplete="off" disabled="true"> 
+                    <f:convertNumber pattern="###,###.##"/>
+                </h:inputText>
+                <h:inputText id="itxtTotalVat" value="#{trans.totalVat}" styleClass="clsInputTransItem" style="width: 150px" disabled="true">
+                    <f:convertNumber pattern="###,###.##"/>
+                </h:inputText>
+                <h:inputText id="itxtCashDiscount" value="#{trans.cashDiscount}" styleClass="clsInputTransItem" style="width: 150px;" autocomplete="off" disabled="#{companySetting.getBoolIsAllowDiscount()}">
+                    <f:convertNumber pattern="###,###.##"/>
+                    <f:ajax event="change" listener="#{transBean.setTransTotalsAndUpdate(trans, transItemBean.activeTransItems)}" render="itxtGrandTotal itxtChange pgrdApprove"/>
+                    <f:ajax event="keyup" listener="#{transBean.setTransTotalsAndUpdate(trans, transItemBean.activeTransItems)}" render="itxtGrandTotal itxtChange pgrdApprove"/>
+                </h:inputText>
+                <h:inputText id="itxtGrandTotal" value="#{trans.grandTotal}" styleClass="clsInputTransItem" style="width: 180px;background-color: gold;font-weight: bold;font-size: 20px;" disabled="true">
+                    <f:convertNumber pattern="###,###,###"/>
+                    <f:ajax event="change" render="itxtChange"/>
+                </h:inputText>
+            </h:panelGrid>
+
+            <h:panelGrid id="pgrdTermsConditions" styleClass="clsGridMainInput" columns="3">
+                <h:outputLabel styleClass="clsLabelTransItem" value="Delivery.Date"/>
+                <h:outputLabel styleClass="clsLabelTransItem" value="#{transactionTypeBean.getTransactionType(10).transactionUserLabel}"/>
+                <h:outputLabel styleClass="clsLabelTransItem" value="Expiry.Date"/>
+                <p:calendar styleClass="clsInput" id="calDeliveryDate" pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}" navigator="true" showButtonPanel="true" readonlyInput="true" value="#{trans.deliveryDate}"/>
+                <p:autoComplete id="autcTransactionUser" value="#{userDetailBean.selectedUserDetail}" 
+                                completeMethod="#{userDetailBean.getUserDetailObjectList}" 
+                                var="ud" 
+                                itemLabel="#{ud.firstName} #{ud.secondName} #{ud.thirdName}" 
+                                itemValue="#{ud}" 
+                                converter="UserDetailConverter" style="text-align: left" 
+                                forceSelection="true" queryDelay="0" 
+                                >
+                    <p:column headerText="User/Staff Names" style="text-align: left" >  
+                        #{ud.firstName} #{ud.secondName} #{ud.thirdName} 
+                    </p:column> 
+                    <p:column headerText="User Category" style="text-align: left" >  
+                        #{userCategoryBean.getUserCategory(ud.userCategoryId).userCategoryName} 
+                    </p:column> 
+                    <p:ajax event="itemSelect" listener="#{trans.setTransactionUserDetailId(userDetailBean.selectedUserDetail.userDetailId)}"/>
+                    <p:ajax event="change" listener="#{trans.setTransactionUserDetailId(userDetailBean.selectedUserDetail.userDetailId)}" rendered="#{userDetailBean.selectedUserDetail!=null}"/>
+                </p:autoComplete>
+                <p:calendar styleClass="clsInput" id="calExpiredDate" pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}" navigator="true" showButtonPanel="true" readonlyInput="true" value="#{trans.expiryDate}"/>
+                <h:outputLabel styleClass="clsLabelTransItem" value="ShipTo/Delivery.Address"/>
+                <h:outputLabel styleClass="clsLabelTransItem" value="Terms.Conditions"/>
+                <h:outputLabel styleClass="clsLabelTransItem" value="Payment.Terms"/>
+                <h:inputTextarea styleClass="clsInput" id="itxaDeliveryAddress" rows="4" value="#{trans.deliveryAddress}"/>
+                <h:inputTextarea styleClass="clsInput" id="itxaTermsConditions" rows="4" value="#{trans.termsConditions}"/>
+                <h:inputTextarea styleClass="clsInput" id="itxaPayTerms" rows="4" value="#{trans.payTerms}"/>
+            </h:panelGrid>
+
+            <h:panelGrid id="pgrdApprove">
+                <h:panelGrid rendered="#{transBean.isApproveNeeded(trans)}" id="pgrdApprove2" styleClass="clsGridApprove" columns="5" style="background-color: lightsalmon">
+                    <h:outputLabel styleClass="clsLabel" value="User Name:"/>
+                    <h:inputText styleClass="clsInput" id="itxtUserName" value="#{trans.approveUserName}" autocomplete="off"> </h:inputText>
+                    <h:outputLabel styleClass="clsLabel" value="Password:"/>
+                    <h:inputSecret styleClass="clsInput" id="itxtPassword" value="#{trans.approveUserPassword}" autocomplete="off"></h:inputSecret>
+                    <h:commandButton value="Approve DISCOUNT">
+                        <f:ajax listener="#{login.userApprove(trans.approveUserName,generalUserSetting.getCurrentStore().storeId,trans.approveUserPassword,'DISCOUNT', 'Add')}" execute="itxtUserName itxtPassword" render="olblDiscountApprove"/>
+                    </h:commandButton>
+
+                    <h:outputLabel styleClass="clsLabel" value=""/>
+                    <h:outputLabel styleClass="clsLabel" value=""/>
+                    <h:outputLabel styleClass="clsLabel" value=""/>
+                    <h:outputLabel styleClass="clsLabel" value=""/>
+                    <h:outputLabel id="olblDiscountApprove" styleClass="clsLabel" style="background-color: black;color: white" value="#{generalUserSetting.getCurrentApproveDiscountStatus()}"/>
+                </h:panelGrid>
+            </h:panelGrid>
+            <h:panelGrid styleClass="clsGridMainCommands" columns="1">
+                <h:panelGrid styleClass="clsGridMainCommands1" columns="2">
+                    <h:commandButton styleClass="clsButtonBig" id="cmdbSave" value="SAVE (ALT+S)" accesskey="s">
+                        <f:ajax listener="#{transBean.saveTrans(trans,transItemBean.activeTransItems,transactorBean.selectedTransactor,transactorBean.selectedBillTransactor,userDetailBean.selectedUserDetail,transactorBean.selectedSchemeTransactor,null)}" execute="@form" render="@form"/>
+                    </h:commandButton>
+                    <h:commandButton id="cmdbClear" styleClass="clsButtonBig" value="CLEAR (ALT+C)" accesskey="c">
+                        <f:ajax listener="#{transBean.clearAll2(trans,transItemBean.activeTransItems,transItem,itemBean.selectedItem,transactorBean.selectedTransactor,2,transactorBean.selectedBillTransactor,userDetailBean.selectedUserDetail,transactorBean.selectedSchemeTransactor,null)}" execute="@form" render="@form"/>
+                    </h:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainMessages" columns="1">
+                <h:outputLabel styleClass="clsActionMessage" id="olblActionMessage" value="#{transBean.actionMessage}"/>
+                <h:messages id="msgsMainMessage" style="color: red"/><br/>
+            </h:panelGrid>
+
+            <!-- INVOICE STARTS HERE -->
+            <ui:include src="TransactionViewSQ.xhtml"/>
+            <!-- INVOICE ENDS HERE -->
+
+        </h:form>
+    </h:body>
+</html>
+

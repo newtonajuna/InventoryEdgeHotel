@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <ui:composition>
+        <p:dialog id="RecentCheckOutsDlg" widgetVar="RecentCheckOutsDialog" modal="true" resizable="false"  appendTo="@(body)" header="RecentCheckOuts Dialog">
+            <h:form id="recentcheckoutsform" styleClass="clsMainFrom" onkeypress="if (event.keyCode == 13)
+                        return false;">
+
+                <p:dataTable tableStyle="width:auto;" id="tblTransactorLedgerRoomDetails" var="rtlrd" value="#{transactorLedgerBean.get_report_transactor_ledger_room_details_guest_folio_recent_check_outs()}">
+                    <f:facet name="header">
+                        Guest Room Details
+                    </f:facet>               
+                    <p:column headerText="Guest Name">
+                        <h:outputText value="#{rtlrd.transactorName}">
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Room Number">
+                        <h:outputText value="#{rtlrd.roomNumber}">
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Check In Date">
+                        <h:outputText value="#{rtlrd.startDate}">
+                            <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Check Out Date">
+                        <h:outputText value="#{rtlrd.endDate}">
+                            <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Date Checked Out From System">
+                        <h:outputText value="#{rtlrd.actualExitDate}">
+                            <f:convertDateTime pattern="#{companySetting.getDateFormat()} HH:mm:ss" timeZone="#{companySetting.getTimeZone()}"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Checked Out By">
+                        <h:outputText value="#{rtlrd.checkedOutBy}">
+
+                        </h:outputText>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+    </ui:composition>
+</html>
+

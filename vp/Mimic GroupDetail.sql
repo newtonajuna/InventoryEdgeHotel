@@ -1,0 +1,14 @@
+UPDATE `inventoryedge`.`group_detail` SET `group_name`='GROUP1' WHERE `group_detail_id`='1';
+UPDATE `inventoryedge`.`group_detail` SET `group_name`='GROUP2' WHERE `group_detail_id`='3';
+UPDATE `inventoryedge`.`group_detail` SET `group_name`='GROUP3' WHERE `group_detail_id`='4';
+UPDATE `inventoryedge`.`group_detail` SET `group_name`='GROUP4' WHERE `group_detail_id`='5';
+UPDATE `inventoryedge`.`group_detail` SET `group_name`='GROUP5' WHERE `group_detail_id`='6';
+UPDATE `inventoryedge`.`group_detail` SET `group_name`='GROUP6' WHERE `group_detail_id`='7';
+UPDATE `inventoryedge`.`group_detail` SET `group_name`='GROUP7' WHERE `group_detail_id`='8';
+UPDATE `inventoryedge`.`group_detail` SET `group_name`='GROUP8' WHERE `group_detail_id`='9';
+UPDATE `inventoryedge`.`group_detail` SET `group_name`='GROUP9' WHERE `group_detail_id`='10';
+UPDATE `inventoryedge`.`group_detail` SET `group_name`='GROUP10' WHERE `group_detail_id`='11';
+UPDATE `inventoryedge`.`group_detail` SET `group_name`='GROUP11' WHERE `group_detail_id`='12';
+UPDATE `inventoryedge`.`group_detail` SET `group_name`='GROUP12' WHERE `group_detail_id`='13';
+UPDATE `inventoryedge`.`group_detail` SET `group_name`='GROUP13' WHERE `group_detail_id`='14';
+UPDATE `inventoryedge`.`group_detail` SET `group_name`='GROUP14' WHERE `group_detail_id`='15';

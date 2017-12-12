@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <ui:composition>
+        <p:dataTable tableStyle="width:auto;" id="tblGuestFolioSummary" var="rtss" value="#{guestFolioBean.getGuestFoliosByTransactor_Amounts(trans.transactorId,trans.billTransactorId)}">
+            <f:facet name="header">
+                Current Guest Folio Summary Report
+            </f:facet>
+
+            <p:column>
+                <!-- column header -->
+                <f:facet name="header">Start Date</f:facet>
+                <!-- row record -->
+                <h:outputLabel value="#{rtss.startDate}">
+                    <f:convertDateTime  pattern="dd-MM-yyyy" timeZone="EAT"/>
+                </h:outputLabel>
+            </p:column>
+
+            <p:column>
+                <!-- column header -->
+                <f:facet name="header">End Date</f:facet>
+                <!-- row record -->
+                <h:outputLabel value="#{rtss.endDate}">
+                    <f:convertDateTime  pattern="dd-MM-yyyy" timeZone="EAT"/>
+                </h:outputLabel>
+            </p:column>
+
+            <p:column headerText="Credit">
+                <h:outputText value="#{rtss.total_amount_credit}">
+                    <f:convertNumber pattern="###,###.##"/>
+                </h:outputText>
+            </p:column>
+
+            <p:column headerText="Debit">
+                <h:outputText value="#{rtss.total_amount_debit}">
+                    <f:convertNumber pattern="###,###.##"/>
+                </h:outputText>
+            </p:column>
+        </p:dataTable>
+    </ui:composition>
+</html>
+

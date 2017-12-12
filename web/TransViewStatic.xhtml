@@ -1,0 +1,297 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Trans View</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script  language="javascript">
+            function confirmDelete()
+            {
+                return confirm('Are you sure you want to delete this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+            function confirmUpdate()
+            {
+                return confirm('Are you sure you want to UPDATE this Transaction?');
+            }
+            function doViewHiddenClick() {
+                document.getElementById("TransForm:cbtnView").click();
+            }
+        </script> 
+    </h:head>
+    <h:body>
+        <h:form id="TransForm" styleClass="clsMainFrom">
+            <h:panelGrid id="pgrdTransHeader" styleClass="clsGridMainInput" columns="6">
+                <h:outputLabel styleClass="clsLabel" value="#{transactionTypeBean.getTransactionType(salesInvoiceBean.getCurrentTransaction().transactionTypeId).transactionNumberLabel}"/>
+                <h:inputText styleClass="clsInput" id="itxtTransactionId" disabled="true" value="#{salesInvoiceBean.getCurrentTransaction().transactionNumber}"/>
+                <h:outputLabel styleClass="clsLabel" value="Trans.Type"/>
+                <h:inputText styleClass="clsInput" id="itxtTransactionType" disabled="true" value="#{transactionTypeBean.getTransactionType(salesInvoiceBean.getCurrentTransaction().transactionTypeId).transactionTypeName}">
+                    <f:ajax event="change" render="cmdbPrint1 cmdbPrint2"/>
+                </h:inputText>
+                <h:outputLabel styleClass="clsLabel" value="Trans.Reason"/>
+                <h:inputText styleClass="clsInput" id="itxtTransactionReason" disabled="true" value="#{transactionReasonBean.getTransactionReason(salesInvoiceBean.getCurrentTransaction().transactionReasonId).transactionReasonName}"/>
+
+                <h:outputLabel styleClass="clsLabel" value="#{transactionTypeBean.getTransactionType(salesInvoiceBean.getCurrentTransaction().transactionTypeId).transactionRefLabel}"/>
+                <h:inputText styleClass="clsInput" disabled="true" value="#{salesInvoiceBean.getCurrentTransaction().transactionRef}"/>
+                <h:outputLabel styleClass="clsLabel" value="#{transactionTypeBean.getTransactionType(salesInvoiceBean.getCurrentTransaction().transactionTypeId).transactionDateLabel}"/>
+                <h:inputText styleClass="clsInput" disabled="true" value="#{salesInvoiceBean.getCurrentTransaction().transactionDate}">
+                    <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                </h:inputText>
+                <h:outputLabel value="#{transactionTypeBean.getTransactionType(salesInvoiceBean.getCurrentTransaction().transactionTypeId).transactionUserLabel}"/>
+                <h:inputText styleClass="clsInput" disabled="true" value="#{userDetailBean.getUserDetail(salesInvoiceBean.getCurrentTransaction().transactionUserDetailId).firstName} #{userDetailBean.getUserDetail(salesInvoiceBean.getCurrentTransaction().addUserDetailId).secondName}"/>
+
+                <h:outputLabel styleClass="clsLabel" value="Add.Date"/>
+                <h:inputText styleClass="clsInput" id="itxtTransactionDate" disabled="true" value="#{salesInvoiceBean.getCurrentTransaction().addDate}">
+                    <f:convertDateTime pattern="#{companySetting.getDateFormat()} H:mm" timeZone="#{companySetting.getTimeZone()}"/>
+                </h:inputText>
+                <h:outputLabel value="Added.by"/>
+                <h:inputText styleClass="clsInput" id="itxtAddUser" disabled="true" value="#{userDetailBean.getUserDetail(salesInvoiceBean.getCurrentTransaction().addUserDetailId).firstName} #{userDetailBean.getUserDetail(salesInvoiceBean.getCurrentTransaction().addUserDetailId).secondName}"/>
+                <h:outputLabel value="Last.Edited.by"/>
+                <h:inputText styleClass="clsInput" id="itxtEditUser" disabled="true" value="#{userDetailBean.getUserDetail(salesInvoiceBean.getCurrentTransaction().editUserDetailId).firstName} #{userDetailBean.getUserDetail(salesInvoiceBean.getCurrentTransaction().editUserDetailId).secondName}"/>
+
+                <h:outputLabel styleClass="clsLabel" value="From.Store"/>
+                <h:inputText styleClass="clsInput" id="itxtFromStore" disabled="true" value="#{storeBean.getStore(salesInvoiceBean.getCurrentTransaction().storeId).storeName}"/>
+                <h:outputLabel styleClass="clsLabel" value="To.Store"/>
+                <h:inputText styleClass="clsInput" id="itxtToStore" disabled="true" value="#{storeBean.getStore(salesInvoiceBean.getCurrentTransaction().store2Id).storeName}"/>
+                <h:outputLabel styleClass="clsLabel" value="Last.Edited.Date"/>
+                <h:inputText styleClass="clsInput" disabled="true" value="#{salesInvoiceBean.getCurrentTransaction().editDate}">
+                    <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                </h:inputText>
+
+                <h:outputLabel styleClass="clsLabel" value="#{transactionTypeBean.getTransactionType(salesInvoiceBean.getCurrentTransaction().transactionTypeId).transactorLabel}"/>
+                <h:inputText styleClass="clsInput" id="itxtCustomerName" disabled="true" value="#{transactorBean.getTransactor(salesInvoiceBean.getCurrentTransaction().transactorId).transactorNames}"/>
+                <h:outputLabel styleClass="clsLabel" value="#{transactionTypeBean.getTransactionType(salesInvoiceBean.getCurrentTransaction().transactionTypeId).billTransactorLabel}"/>
+                <h:inputText styleClass="clsInput" id="itxtCustomerName2" disabled="true" value="#{transactorBean.getTransactor(salesInvoiceBean.getCurrentTransaction().billTransactorId).transactorNames}"/>
+
+                <h:outputLabel styleClass="clsLabel" value="Scheme Transactor"/>
+                <h:inputText styleClass="clsInput" id="itxtCustomerName3" disabled="true" value="#{transactorBean.getTransactor(salesInvoiceBean.getCurrentTransaction().schemeTransactorId).transactorNames}"/>
+                <h:outputLabel styleClass="clsLabel" value="Scheme Member"/>
+                <h:inputText styleClass="clsInput" id="itxtSchemeMember" disabled="true" value="#{salesInvoiceBean.getCurrentTransaction().princSchemeMember}"/>
+            </h:panelGrid>
+
+            <p:dataTable rowIndexVar="rowIndex" id="dtblTransItems" value="#{transItemBean.getTransItemsByTransactionId(salesInvoiceBean.getCurrentTransaction().transactionId)}" var="ati" 
+                         styleClass="cls-table" tableStyle="width:auto;" 
+                         >  
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">#</f:facet>
+                    <!-- row record -->
+                    #{rowIndex+1}
+                </p:column>
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Item Description</f:facet>
+                    <!-- row record -->
+                    #{itemBean.getItem(ati.itemId).description}
+                </p:column>
+
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Unit</f:facet>
+                    <!-- row record -->
+                    #{unitBean.getUnit(itemBean.getItem(ati.itemId).getUnitId()).unitSymbol}
+                </p:column>
+
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Batch No</f:facet>
+                    <!-- row record -->
+                    #{ati.batchno}
+                </p:column>
+
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Qty</f:facet>
+                    <!-- row record -->
+                    <h:outputLabel value="#{ati.itemQty}" style="width: 50px;" />
+                </p:column>
+
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Unit Price</f:facet>
+                    <!-- row record -->
+                    <h:outputLabel value="#{ati.unitPriceExcVat}">
+                        <f:convertNumber pattern="###,###.##"/>
+                    </h:outputLabel>
+                </p:column>
+
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Unit VAT</f:facet>
+                    <!-- row record -->
+                    <h:outputLabel value="#{ati.unitVat}">
+                        <f:convertNumber pattern="###,###.##"/>
+                    </h:outputLabel>
+                </p:column>
+
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Unit Trade.Disc</f:facet>
+                    <!-- row record -->
+                    <h:outputLabel value="#{ati.unitTradeDiscount}">
+                        <f:convertNumber pattern="###,###.##"/>
+                    </h:outputLabel>
+                </p:column>
+
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Amount</f:facet>
+                    <!-- row record -->
+                    <h:outputLabel value="#{ati.amountIncVat}">
+                        <f:convertNumber pattern="###,###.##"/>
+                    </h:outputLabel>
+                </p:column>
+
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Manuf.Date</f:facet>
+                    <!-- row record -->
+                    <h:outputLabel value="#{ati.itemMnfDate}">
+                        <f:convertDateTime pattern="d-MMM-yyyy"/>
+                    </h:outputLabel>
+                </p:column>
+
+                <p:column>
+                    <!-- column header -->
+                    <f:facet name="header">Expiry.Date</f:facet>
+                    <!-- row record -->
+                    <h:outputLabel value="#{ati.itemExpryDate}">
+                        <f:convertDateTime pattern="d-MMM-yyyy"/>
+                    </h:outputLabel>
+                </p:column> 
+            </p:dataTable>
+
+            <h:panelGrid id="pgrdTransTotals">
+                <h:panelGrid rendered="#{transactionTypeBean.transNeeds(salesInvoiceBean.getCurrentTransaction().transactionTypeId,'total')==1}" columns="6">
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value="Sub.Total"/>
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value="Total.Trade.Disc"/>
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value="Total.VAT"/>
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value="Cash.Disc"/>
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value="GRAND.TOTAL"/>
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value=""/>
+
+                    <h:inputText id="itxtSubTotal" value="#{salesInvoiceBean.getCurrentTransaction().subTotal}" styleClass="clsInputTransItem" style="width: 150px" disabled="true">
+                        <f:convertNumber pattern="###,###.##"/>
+                    </h:inputText>
+                    <h:inputText id="itxtTotalTradeDiscount" value="#{salesInvoiceBean.getCurrentTransaction().totalTradeDiscount}" styleClass="clsInputTransItem" style="width: 150px" autocomplete="off" disabled="true"> 
+                        <f:convertNumber pattern="###,###.##"/>
+                    </h:inputText>
+                    <h:inputText id="itxtTotalVat" value="#{salesInvoiceBean.getCurrentTransaction().totalVat}" styleClass="clsInputTransItem" style="width: 150px" disabled="true">
+                        <f:convertNumber pattern="###,###.##"/>
+                    </h:inputText>
+                    <h:inputText id="itxtCashDiscount" value="#{salesInvoiceBean.getCurrentTransaction().cashDiscount}" styleClass="clsInputTransItem" style="width: 150px;" autocomplete="off" disabled="true"/>
+                    <h:inputText id="itxtGrandTotal" value="#{salesInvoiceBean.getCurrentTransaction().grandTotal}" styleClass="clsInputTransItem" style="width: 150px" disabled="true">
+                        <f:convertNumber pattern="###,###,###"/>
+                    </h:inputText>
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value="#{companySetting.getCurrencyUsed()}">
+                    </h:outputLabel>
+                </h:panelGrid>
+            </h:panelGrid>
+
+            <h:panelGrid id="pgrdTransPayment">
+                <h:panelGrid rendered="#{transactionTypeBean.transNeeds(salesInvoiceBean.getCurrentTransaction().transactionTypeId,'payment')==1}" columns="4">
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value="Payment.Method"/>
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value="Amount.Tendered"/>
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value="Spend.PointsAmt"/>
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value="Change.Amount"/>
+
+                    <h:inputText id="itxtPayMethod" styleClass="clsInputTransItem" value="#{payMethodBean.getPayMethod(salesInvoiceBean.getCurrentTransaction().payMethod).payMethodName}" disabled="true" autocomplete="off" style="width: 150px;">
+                    </h:inputText>
+                    <h:inputText id="itxtAmountTendered" value="#{salesInvoiceBean.getCurrentTransaction().amountTendered}" styleClass="clsInputTransItem" style="width: 150px;background-color: gold;font-weight: bold;font-size: 20px;" autocomplete="off"/>
+                    <h:inputText id="itxtSpendPointsAmount" value="#{salesInvoiceBean.getCurrentTransaction().spendPointsAmount}" styleClass="clsInputTransItem" style="width: 150px;background-color: aquamarine" disabled="true" autocomplete="off"/>
+                    <h:inputText id="itxtChange" value="#{salesInvoiceBean.getCurrentTransaction().changeAmount}" styleClass="clsInputTransItem" style="width: 150px;background-color: red;color: white" disabled="true">
+                        <f:convertNumber pattern="###,###.##"/>
+                    </h:inputText>
+
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value="Loyality.Card.No" rendered="#{salesInvoiceBean.getCurrentTransaction().transactionTypeId==2}"/>
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value="Loyality.Card.Holder" rendered="#{salesInvoiceBean.getCurrentTransaction().transactionTypeId==2}"/>
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value="Bal.Points.Amount" rendered="#{salesInvoiceBean.getCurrentTransaction().transactionTypeId==2}"/>
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value="" rendered="#{salesInvoiceBean.getCurrentTransaction().transactionTypeId==2}"/>
+
+                    <h:inputText id="itxtCardNumber" value="#{salesInvoiceBean.getCurrentTransaction().cardNumber}" styleClass="clsInputTransItem" style="width: 150px; background-color: aquamarine" autocomplete="off" disabled="true" rendered="#{salesInvoiceBean.getCurrentTransaction().transactionTypeId==2}">                           
+                    </h:inputText>
+                    <h:inputText id="itxtCardHolder" value="#{salesInvoiceBean.getCurrentTransaction().cardHolder}" styleClass="clsInputTransItem" style="width: 150px;background-color: aquamarine" autocomplete="off" disabled="true" rendered="#{salesInvoiceBean.getCurrentTransaction().transactionTypeId==2}">
+                    </h:inputText>
+                    <h:inputText id="itxtBalPointsAmount" value="#{salesInvoiceBean.getCurrentTransaction().balancePointsAmount}" styleClass="clsInputTransItem" style="width: 150px;background-color: aquamarine" disabled="true" rendered="#{salesInvoiceBean.getCurrentTransaction().transactionTypeId==2}">
+                        <f:convertNumber pattern="###,###.##"/>
+                    </h:inputText>
+                    <h:outputLabel styleClass="clsLabelTransItem" style="width: 150px" value="" rendered="#{salesInvoiceBean.getCurrentTransaction().transactionTypeId==2}"/>
+                </h:panelGrid>
+            </h:panelGrid>
+
+            <h:panelGrid id="pgDelivery">
+                <h:panelGrid rendered="#{transactionTypeBean.transNeeds(salesInvoiceBean.getCurrentTransaction().transactionTypeId,'delivery')==1}"  columns="2" style="width:100%;margin: 0px;">
+                    <h:panelGrid style="margin: 0px;text-align: left;width: 250px;" columns="1">
+                        <h:outputLabel value="Delivery Date" style="border-bottom-style: solid;"/>
+                        <h:outputText styleClass="clsInput" value="#{salesInvoiceBean.getCurrentTransaction().deliveryDate}">
+                            <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                        </h:outputText>
+                    </h:panelGrid>
+                    <h:panelGrid style="margin: 0px;text-align: left; float: right;width: 250px;" columns="1">
+                        <h:outputLabel value="Delivery Address" style="border-bottom-style: solid;"/>
+                        <div style="width: 250px;">
+                            #{salesInvoiceBean.getCurrentTransaction().deliveryAddress}
+                        </div>
+                    </h:panelGrid>
+                </h:panelGrid>
+            </h:panelGrid>
+
+            <h:panelGrid id="pgPayTerms">
+                <h:panelGrid rendered="#{transactionTypeBean.transNeeds(salesInvoiceBean.getCurrentTransaction().transactionTypeId,'pay_terms')==1}" columns="2" style="width:100%;margin: 0px;">
+                    <h:panelGrid style="margin: 0px;text-align: left;width: 250px;" columns="1">
+                        <h:outputLabel value="Payment Due Date" style="border-bottom-style: solid;"/>
+                        <h:outputText styleClass="clsInput" value="#{salesInvoiceBean.getCurrentTransaction().payDueDate}">
+                            <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                        </h:outputText>
+                    </h:panelGrid>
+                    <h:panelGrid style="margin: 0px;text-align: left; float: right;width: 250px;" columns="1">
+                        <h:outputLabel value="Payment Terms" style="border-bottom-style: solid;"/>
+                        <div style="width: 250px;">
+                            #{salesInvoiceBean.getCurrentTransaction().payTerms}
+                        </div>
+                    </h:panelGrid>
+                </h:panelGrid>
+            </h:panelGrid>
+
+            <h:panelGrid id="pgGenTerms">
+                <h:panelGrid rendered="#{transactionTypeBean.transNeeds(salesInvoiceBean.getCurrentTransaction().transactionTypeId,'gen_terms')==1}" columns="2" style="width:100%;margin: 0px;">
+                    <h:panelGrid style="margin: 0px;text-align: left;width: 250px;" columns="1">
+                        <h:outputLabel value="Expiry Date" style="border-bottom-style: solid;"/>
+                        <h:outputText styleClass="clsInput" value="#{salesInvoiceBean.getCurrentTransaction().expiryDate}">
+                            <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                        </h:outputText>
+                    </h:panelGrid>
+                    <h:panelGrid style="margin: 0px;text-align: left; float: right;width: 250px;" columns="1">
+                        <h:outputLabel value="Terms and Conditions" style="border-bottom-style: solid;"/>
+                        <div style="width: 250px;">
+                            #{salesInvoiceBean.getCurrentTransaction().termsConditions}
+                        </div>
+                    </h:panelGrid>
+                </h:panelGrid>
+            </h:panelGrid>
+
+            <h:panelGrid id="pgAuthorise">
+                <h:panelGrid rendered="#{transactionTypeBean.transNeeds(salesInvoiceBean.getCurrentTransaction().transactionTypeId,'authorise')==1}" columns="2" style="width:100%;margin: 0px;">
+                    <h:panelGrid style="margin: 0px;text-align: left; float: left;width: 250px;" columns="1">
+                        <h:outputLabel value="Authorised By" style="border-bottom-style: solid;"/>
+                        <h:outputText styleClass="clsInput" value="#{userDetailBean.getUserDetail(salesInvoiceBean.getCurrentTransaction().authorisedByUserDetailId).firstName} #{userDetailBean.getUserDetail(salesInvoiceBean.getCurrentTransaction().authorisedByUserDetailId).secondName}"/>
+                    </h:panelGrid>
+                    <h:panelGrid style="margin: 0px;text-align: right;width: 250px;" columns="1">
+                        <h:outputLabel value="Authorise Date" style="border-bottom-style: solid;"/>
+                        <h:outputText styleClass="clsInput" value="#{salesInvoiceBean.getCurrentTransaction().authoriseDate}">
+                            <f:convertDateTime pattern="#{companySetting.getDateFormat()}" timeZone="#{companySetting.getTimeZone()}"/>
+                        </h:outputText>
+                    </h:panelGrid>
+                </h:panelGrid>
+            </h:panelGrid>
+        </h:form>
+    </h:body>
+</html>
+

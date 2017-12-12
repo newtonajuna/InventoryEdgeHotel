@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Group Rights</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script  language="javascript">
+            function confirmDelete()
+            {
+                return confirm('Are you sure you want to delete this current record?');
+            }
+            function alertSave()
+            {
+                return alert('Record saved successfully!');
+            }
+        </script> 
+    </h:head>
+    <f:event listener="#{navigationBean.checkAccessDenied('SETTING', 'View')}" type="preRenderView" />
+    <h:body>
+        <ui:include src="Menu.xhtml"/>
+        <h:form id="form" styleClass="clsMainFrom">
+
+            <h:panelGrid styleClass="clsGridMainHeader" columns="1">
+                <h:outputLabel styleClass="clsLabelTop" id="olblcategoryHeader" value="Group Rights"/>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainInput" columns="4">
+                
+                <h:outputLabel styleClass="clsLabel" value="Select Group:"/>
+                <h:selectOneMenu styleClass="clsMenu" id="menuGroupDetail" value="#{groupRight.groupDetailId}">
+                    <f:selectItem itemLabel="" itemValue="0"/>
+                    <f:selectItems value="#{groupDetailBean.groupDetails}" var="g" itemLabel="#{g.groupName}" itemValue="#{g.groupDetailId}"/>
+                    <f:ajax event="change" execute="menuGroupDetail menuStore" render="dtblGroupRightEdit" listener="#{groupRightBean.setSelectedGroupDetailId(groupRight.groupDetailId)}"/>
+                    <f:ajax event="change" execute="menuGroupDetail menuStore" render="dtblGroupRightEdit" listener="#{groupRightBean.retrieveGroupRightsForEdit()}"/>
+                </h:selectOneMenu>
+                
+                <h:outputLabel styleClass="clsLabel" value="Select Store:"/>
+                <h:selectOneMenu styleClass="clsMenu" id="menuStore" value="#{groupRight.storeId}">
+                    <f:selectItem itemLabel="" itemValue="0"/>
+                    <f:selectItems value="#{storeBean.stores}" var="s" itemLabel="#{s.storeName}" itemValue="#{s.storeId}"/>
+                    <f:ajax event="change" execute="menuGroupDetail menuStore" render="dtblGroupRightEdit" listener="#{groupRightBean.setSelectedStoreId(groupRight.storeId)}"/>
+                    <f:ajax event="change" execute="menuGroupDetail menuStore" render="dtblGroupRightEdit" listener="#{groupRightBean.retrieveGroupRightsForEdit()}"/>
+                </h:selectOneMenu>
+                
+           </h:panelGrid>
+            
+           <h:dataTable id="dtblGroupRightEdit" value="#{groupRightBean.groupRightsForEdit}" var="gre" 
+                         styleClass="cls-table" 
+                         headerClass="cls-table-header" 
+                         rowClasses="cls-table-odd-row,cls-table-even-row" 
+                         columnClasses="cls-table-col1,cls-table-col2,cls-table-col3,cls-table-col4,cls-table-col5"
+                         > 
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">FUNCTION NAME</f:facet>
+                    <!-- row record -->
+                    #{gre.functionName}
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">VIEW</f:facet>
+                    <!-- row record -->
+                    <h:selectOneMenu styleClass="clsMenu" style="color:#{groupDetailBean.getRightTextColor(gre.allowView)}" id="menuAllowView" value="#{gre.allowView}">
+                        <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                        <f:selectItem itemLabel="No" itemValue="No"/>
+                        <f:ajax event="change" render="menuAllowView"/>
+                    </h:selectOneMenu>
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">ADD</f:facet>
+                    <!-- row record -->
+                    <h:selectOneMenu styleClass="clsMenu" style="color:#{groupDetailBean.getRightTextColor(gre.allowAdd)}" id="menuAllowAdd" value="#{gre.allowAdd}">
+                        <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                        <f:selectItem itemLabel="No" itemValue="No"/>
+                        <f:ajax event="change" render="menuAllowAdd"/>
+                    </h:selectOneMenu>
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">EDIT</f:facet>
+                    <!-- row record -->
+                    <h:selectOneMenu styleClass="clsMenu" style="color:#{groupDetailBean.getRightTextColor(gre.allowEdit)}" id="menuAllowEdit" value="#{gre.allowEdit}">
+                        <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                        <f:selectItem itemLabel="No" itemValue="No"/>
+                        <f:ajax event="change" render="menuAllowEdit"/>
+                    </h:selectOneMenu>
+                </h:column>
+                
+                <h:column>
+                    <!-- column header -->
+                    <f:facet name="header">DELETE</f:facet>
+                    <!-- row record -->
+                    <h:selectOneMenu styleClass="clsMenu" style="color:#{groupDetailBean.getRightTextColor(gre.allowDelete)}" id="menuAllowDelete" value="#{gre.allowDelete}">
+                        <f:selectItem itemLabel="Yes" itemValue="Yes"/>
+                        <f:selectItem itemLabel="No" itemValue="No"/>
+                        <f:ajax event="change" render="menuAllowDelete"/>
+                    </h:selectOneMenu>
+                </h:column>
+                
+            </h:dataTable>
+         
+
+            <h:panelGrid styleClass="clsGridMainCommands" columns="1">
+                <h:commandButton styleClass="clsButtonNone" id="cmdbSave" value="Save group right">
+                    <f:actionListener binding="#{groupRightBean.saveGroupRight()}" />
+                </h:commandButton>
+            </h:panelGrid>
+
+            <h:panelGrid styleClass="clsGridMainMessages" columns="1">
+                <h:outputLabel styleClass="clsActionMessage" id="olblActionMessage" value="#{userRightBean.actionMessage}"/>
+                <h:messages id="msgsMainMessage" style="color: red"/><br/>
+            </h:panelGrid>
+            
+        </h:form>
+    </h:body>
+</html>
+
