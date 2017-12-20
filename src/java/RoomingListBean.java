@@ -116,7 +116,7 @@ public class RoomingListBean {
                 r.setItem_id(rs.getInt("item_id"));
                 r.setRoom_id(rs.getLong("room_id"));
                 r.setBill_transactor_id(rs.getInt("bill_transactor_id"));
-                r.setOrg_Self(rs.getString("ORG/SELF2"));
+                //r.setOrg_Self(rs.getString("ORG/SELF2"));
                 roomingList.add(r);
             }
             return roomingList;

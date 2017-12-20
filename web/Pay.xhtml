@@ -95,10 +95,10 @@
                 </h:panelGrid>
 
             </h:panelGrid>
-
+            <p style="font-weight: bold;color: red;">&nbsp; Only fields marked * are mandatory</p>
             <h:panelGrid>
                 <h:panelGrid id="pnlTransType" columns="1">
-                    <h:panelGrid id="pnlTransTypeMAuto" columns="2" style="text-align: right;">
+                    <h:panelGrid id="pnlTransTypeMAuto" columns="2">
                         <h:outputLabel styleClass="clsLabel" value="#{transactionTypeBean.getTransactionType(2).transactionNumberLabel}:" rendered="#{generalUserSetting.getCurrentPayCategory().equals('IN')}"/>
                         <h:outputLabel styleClass="clsLabel" value="#{transactionTypeBean.getTransactionType(1).transactionNumberLabel}:" rendered="#{generalUserSetting.getCurrentPayCategory().equals('OUT')}"/>
                         <h:selectOneMenu styleClass="clsMenu" id="menuTransaction" value="#{pay.transactionId}">
@@ -106,53 +106,52 @@
                             <f:selectItems value="#{transBean.getTranssByBillTrPayCatTransNo(trans.transactionNumber2,payBean.selectedBillTransactor.transactorId,generalUserSetting.getCurrentPayCategory())}" var="trn" itemLabel="No:#{trn.transactionNumber} Ref:#{trn.transactionRef} Amount:#{trn.grandTotal}" itemValue="#{trn.transactionId}"/>
                             <f:ajax event="change" render="pnlTransTypeManual"/>
                         </h:selectOneMenu>
-                    </h:panelGrid>
-                    <h:panelGrid id="pnlTransTypeManual" columns="2" style="text-align: right;">
-                        <h:outputLabel styleClass="clsLabel" value="Trans.Type:" rendered="#{transBean.transactorTranss.size()==0}"/>
-                        <h:selectOneMenu styleClass="clsMenu" id="menuTransactionType" value="#{pay.transactionTypeId}" rendered="#{transBean.transactorTranss.size()==0}">
+                        <h:outputLabel styleClass="clsLabel" value="Trans.Type:"/>
+                        <h:selectOneMenu styleClass="clsMenu" id="menuTransactionType" value="#{pay.transactionTypeId}">
                             <f:selectItem itemValue="0" itemLabel=""/>
                             <f:selectItem itemValue="2" itemLabel="SALE INVOICE" itemDisabled="#{generalUserSetting.getCurrentPayCategory().equals('OUT')}"/>
                             <f:selectItem itemValue="1" itemLabel="PURCHASE INVOICE" itemDisabled="#{generalUserSetting.getCurrentPayCategory().equals('IN')}"/>
                             <f:ajax event="change" render="menuTransactionType menuTransactionReason"/>
                         </h:selectOneMenu>
-                        <h:outputLabel styleClass="clsLabel" value="Trans.Reason:" rendered="#{transBean.transactorTranss.size()==0}"/>
-                        <h:selectOneMenu styleClass="clsMenu" id="menuTransactionReason" value="#{pay.transactionReasonId}" rendered="#{transBean.transactorTranss.size()==0}">
+                        <h:outputLabel styleClass="clsLabel" value="Trans.Reason:"/>
+                        <h:selectOneMenu styleClass="clsMenu" id="menuTransactionReason" value="#{pay.transactionReasonId}">
                             <f:selectItem itemLabel="" itemValue="0"/>
                             <f:selectItems value="#{transactionReasonBean.getTransactionReasons(pay.transactionTypeId)}" var="tr" itemLabel="#{tr.transactionReasonName}" itemValue="#{tr.transactionReasonId}"/>
                         </h:selectOneMenu>
+                        <h:outputLabel styleClass="clsLabel" style="width: 250px;" value="Payment Date:*"/>
+                        <p:calendar styleClass="clsInput" style="width: 250px;" id="calPaymentDate" pattern="dd-MM-yyyy" navigator="true" showButtonPanel="true" readonlyInput="true" value="#{pay.payDate}">
+                        </p:calendar>
+
+                        <h:outputLabel styleClass="clsLabel" style="width: 250px;" value="Payment Method:*" for="menuPayMethod"/>
+                        <h:selectOneMenu styleClass="clsMenu" style="width: 250px;" id="menuPayMethod" value="#{pay.payMethodId}" required="true">
+                            <f:selectItems value="#{payMethodBean.payMethods}" var="pm" itemLabel="#{pm.payMethodName}" itemValue="#{pm.payMethodId}"/>
+                            <f:ajax listener="#{payBean.compute_surcharge_total_amount(pay.payMethodId, pay)}" execute="@this" render="itxtSurcharge itxtTotalAmount"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel styleClass="clsLabel" style="width: 250px;" value="Payment Ref No:"/>
+                        <h:inputText id="itxtPayRefNo" style="width: 250px;" value="#{pay.payRefNo}" styleClass="clsInputTransItem"/>
+                        <h:outputLabel styleClass="clsLabel" value="Currency Type:"/>
+                        <h:selectOneMenu styleClass="clsMenu" value="#{pay.currencyTypeId}">
+                            <f:selectItems value="#{currencyTypeBean.currencyTypes}" var="ct" itemLabel="#{ct.currencyTypeName}" itemValue="#{ct.currencyTypeId}"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel styleClass="clsLabel" style="width: 250px;" value="Paid Amount:*"/>
+                        <h:inputText id="itxtPaidAmount" style="width: 250px;" value="#{pay.paidAmount}" styleClass="clsInputTransItem" autocomplete="off">
+                            <f:ajax listener="#{payBean.compute_surcharge_total_amount(pay.payMethodId, pay)}" execute="@this" render="itxtSurcharge itxtTotalAmount"/>
+                        </h:inputText>
+                        <h:outputLabel styleClass="clsLabel" style="width: 250px;" value="Surchage:"/>
+                        <h:inputText id="itxtSurcharge" style="width: 250px;" value="#{pay.surcharge}" styleClass="clsInputTransItem" autocomplete="off" disabled="true">
+                        </h:inputText>
+                        <h:outputLabel styleClass="clsLabel" style="width: 250px;" value="Total Amount:"/>
+                        <h:inputText id="itxtTotalAmount" style="width: 250px;" value="#{pay.total_amount}" styleClass="clsInputTransItem" autocomplete="off" disabled="true">
+                        </h:inputText>
+                        <h:outputLabel styleClass="clsLabel" style="width: 250px;" value="Points Amount Spent:"/>
+                        <h:inputText id="itxtSpendPointsAmount" style="width: 250px;" value="#{pay.pointsSpentAmount}" styleClass="clsInputTransItem" disabled="true">
+                            <f:convertNumber pattern="###,###.##"/>
+                        </h:inputText>
                     </h:panelGrid>
-                </h:panelGrid>
+                                    </h:panelGrid>
 
                 <h:panelGrid styleClass="clsGridMainInput" columns="2">
-                    <h:outputLabel styleClass="clsLabel" style="width: 250px;" value="Payment Date:"/>
-                    <p:calendar styleClass="clsInput" style="width: 250px;" id="calPaymentDate" pattern="dd-MM-yyyy" navigator="true" showButtonPanel="true" readonlyInput="true" value="#{pay.payDate}">
-                    </p:calendar>
 
-                    <h:outputLabel styleClass="clsLabel" style="width: 250px;" value="Payment Method:" for="menuPayMethod"/>
-                    <h:selectOneMenu styleClass="clsMenu" style="width: 250px;" id="menuPayMethod" value="#{pay.payMethodId}" required="true">
-                        <f:selectItems value="#{payMethodBean.payMethods}" var="pm" itemLabel="#{pm.payMethodName}" itemValue="#{pm.payMethodId}"/>
-                        <f:ajax listener="#{payBean.compute_surcharge_total_amount(pay.payMethodId, pay)}" execute="@this" render="itxtSurcharge itxtTotalAmount"/>
-                    </h:selectOneMenu>
-                    <h:outputLabel styleClass="clsLabel" style="width: 250px;" value="Payment Ref No:"/>
-                    <h:inputText id="itxtPayRefNo" style="width: 250px;" value="#{pay.payRefNo}" styleClass="clsInputTransItem"/>
-                    <h:outputLabel styleClass="clsLabel" value="Currency Type:"/>
-                    <h:selectOneMenu styleClass="clsMenu" value="#{pay.currencyTypeId}">
-                        <f:selectItems value="#{currencyTypeBean.currencyTypes}" var="ct" itemLabel="#{ct.currencyTypeName}" itemValue="#{ct.currencyTypeId}"/>
-                    </h:selectOneMenu>
-                    <h:outputLabel styleClass="clsLabel" style="width: 250px;" value="Paid Amount:"/>
-                    <h:inputText id="itxtPaidAmount" style="width: 250px;" value="#{pay.paidAmount}" styleClass="clsInputTransItem" autocomplete="off">
-                        <f:ajax listener="#{payBean.compute_surcharge_total_amount(pay.payMethodId, pay)}" execute="@this" render="itxtSurcharge itxtTotalAmount"/>
-                    </h:inputText>
-                    <h:outputLabel styleClass="clsLabel" style="width: 250px;" value="Surchage:"/>
-                    <h:inputText id="itxtSurcharge" style="width: 250px;" value="#{pay.surcharge}" styleClass="clsInputTransItem" autocomplete="off" disabled="true">
-                    </h:inputText>
-                    <h:outputLabel styleClass="clsLabel" style="width: 250px;" value="Total Amount:"/>
-                    <h:inputText id="itxtTotalAmount" style="width: 250px;" value="#{pay.total_amount}" styleClass="clsInputTransItem" autocomplete="off" disabled="true">
-                    </h:inputText>
-                    <h:outputLabel styleClass="clsLabel" style="width: 250px;" value="Points Amount Spent:"/>
-                    <h:inputText id="itxtSpendPointsAmount" style="width: 250px;" value="#{pay.pointsSpentAmount}" styleClass="clsInputTransItem" disabled="true">
-                        <f:convertNumber pattern="###,###.##"/>
-                    </h:inputText>
                 </h:panelGrid>
             </h:panelGrid>
             <h:panelGrid id="buttons" styleClass="clsGridMainCommands" columns="1">
